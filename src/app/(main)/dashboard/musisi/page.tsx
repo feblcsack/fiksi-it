@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase/config";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Dialog } from "@headlessui/react";
-import Navbar from "@/app/Navbar";
+import { Navbar } from "../../../../components/organisms/Navbar";
 
 interface Gig {
   id: string;
@@ -46,14 +46,7 @@ export default function MusicianLandingPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      
-      {/* Header */}
-      <header className="border-b border-white/10 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex justify-center items-center">
-          <h1 className="text-xl font-light tracking-tight">MUSICIAN</h1>
-         {/* <Navbar/> */}
-        </div>
-      </header>
+      <Navbar />
 
       <div className="max-w-4xl mx-auto px-6 py-16">
         {/* Hero Section */}
