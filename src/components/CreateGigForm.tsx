@@ -34,7 +34,7 @@ export default function CreateGigForm() {
           setLatitude(position.coords.latitude.toString());
           setLongitude(position.coords.longitude.toString());
         },
-        (error) => {
+        () => {
           setError("Tidak bisa mendapatkan lokasi. Pastikan GPS aktif.");
         },
       );
@@ -85,8 +85,12 @@ export default function CreateGigForm() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
-    } catch (err: any) {
-      setError(err.message || "Gagal membuat event");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Gagal membuat event");
+      }
     } finally {
       setLoading(false);
     }
