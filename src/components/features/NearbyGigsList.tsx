@@ -21,6 +21,8 @@ interface GigData {
   datetime: Date;
   distance?: number;
   musisiId: string;
+  musisiName?: string; // ← TAMBAH INI
+  musisiUsername?: string;
 }
 
 export const NearbyGigsList = () => {
@@ -48,10 +50,10 @@ export const NearbyGigsList = () => {
         },
         () => {
           setError(
-            "Location access denied. Please enable location to see nearby gigs.",
+            "Location access denied. Please enable location to see nearby gigs."
           );
           setLoading(false);
-        },
+        }
       );
     } else {
       setError("Geolocation not supported by your browser.");
@@ -69,7 +71,7 @@ export const NearbyGigsList = () => {
             id: doc.id,
             ...doc.data(),
             datetime: doc.data().datetime.toDate(),
-          }),
+          })
         ) as GigData[];
         setGigs(gigsData);
       } catch (err) {
@@ -92,7 +94,7 @@ export const NearbyGigsList = () => {
           userLocation.lat,
           userLocation.lon,
           gig.location.latitude,
-          gig.location.longitude,
+          gig.location.longitude
         ),
       }))
       .filter((gig) => gig.distance !== undefined && gig.distance <= radius)
@@ -131,7 +133,7 @@ export const NearbyGigsList = () => {
 
       const map = L.map("gig-map").setView(
         [selectedGig.location.latitude, selectedGig.location.longitude],
-        14,
+        14
       );
 
       // Add OpenStreetMap tiles (FREE!)
@@ -144,7 +146,7 @@ export const NearbyGigsList = () => {
       L.marker([selectedGig.location.latitude, selectedGig.location.longitude])
         .addTo(map)
         .bindPopup(
-          `<b>${selectedGig.title}</b><br>${selectedGig.locationName || "Gig Location"}`,
+          `<b>${selectedGig.title}</b><br>${selectedGig.locationName || "Gig Location"}`
         )
         .openPopup();
 
@@ -171,7 +173,7 @@ export const NearbyGigsList = () => {
           weight: 3,
           opacity: 0.7,
           dashArray: "10, 10",
-        },
+        }
       ).addTo(map);
 
       // Fit bounds to show both markers

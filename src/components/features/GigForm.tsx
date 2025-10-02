@@ -2,12 +2,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { db } from "@/lib/firebase/config";
+import { db, storage } from "@/lib/firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { GeoPoint } from "firebase/firestore";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Timestamp } from "firebase/firestore";
-import { MapPin, Search, Check, Loader2 } from "lucide-react";
+import { MapPin, Search, Check, Loader2, UploadCloud } from "lucide-react";
 
 interface LocationSearchResult {
   place_id: number;
@@ -20,6 +21,9 @@ export const GigForm = () => {
   const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [bandName, setBandName] = useState("");
+  const [bandLogo, setBandLogo] = useState<File | null>(null);
+  const [bandLogoPreview, setBandLogoPreview] = useState<string | null>(null);
   const [datetime, setDatetime] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
   const [locationResults, setLocationResults] = useState<
@@ -107,6 +111,14 @@ export const GigForm = () => {
     setLocationResults([]);
   };
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setBandLogo(file);
+      setBandLogoPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -120,9 +132,21 @@ export const GigForm = () => {
     setSuccess(null);
 
     try {
+      let bandLogoUrl = "";
+      if (bandLogo) {
+        const storageRef = ref(
+          storage,
+          `band_logos/${user.uid}-${Date.now()}-${bandLogo.name}`,
+        );
+        await uploadBytes(storageRef, bandLogo);
+        bandLogoUrl = await getDownloadURL(storageRef);
+      }
+
       await addDoc(collection(db, "gigs"), {
         title,
         description,
+        bandName,
+        bandLogoUrl,
         datetime: Timestamp.fromDate(new Date(datetime)),
         location: new GeoPoint(
           parseFloat(selectedLocation.lat),
@@ -144,6 +168,9 @@ export const GigForm = () => {
         setLocationResults([]);
         setSelectedLocation(null);
         setSuccess(null);
+        setBandName("");
+        setBandLogo(null);
+        setBandLogoPreview(null);
       }, 2000);
     } catch (err: any) {
       setError(err.message || "Failed to create gig. Please try again.");
@@ -201,6 +228,53 @@ export const GigForm = () => {
               rows={4}
               className="w-full bg-transparent border border-white/10 px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 transition-colors resize-none font-light"
             />
+          </div>
+
+          {/* Band Name Field */}
+          <div className="space-y-3">
+            <label
+              htmlFor="bandName"
+              className="block text-xs font-mono text-white/40 uppercase tracking-wider"
+            >
+              Band / Artist Name
+            </label>
+            <input
+              id="bandName"
+              type="text"
+              value={bandName}
+              onChange={(e) => setBandName(e.target.value)}
+              placeholder="Enter your band or artist name (optional)"
+              className="w-full bg-transparent border border-white/10 px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 transition-colors font-light"
+            />
+          </div>
+
+          {/* Band Logo Field */}
+          <div className="space-y-3">
+            <label className="block text-xs font-mono text-white/40 uppercase tracking-wider">
+              Band Logo (Optional)
+            </label>
+            <div className="flex items-center gap-4">
+              {bandLogoPreview ? (
+                <img
+                  src={bandLogoPreview}
+                  alt="Band logo preview"
+                  className="w-16 h-16 rounded-lg object-cover border-2 border-white/20"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                  <UploadCloud className="h-6 w-6 text-white/40" />
+                </div>
+              )}
+              <div className="flex-grow">
+                <input
+                  id="bandLogo"
+                  type="file"
+                  onChange={handleLogoChange}
+                  accept="image/*"
+                  className="block w-full text-sm text-white/60 font-light file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-colors cursor-pointer"
+                />
+              </div>
+            </div>
           </div>
 
           {/* DateTime Field */}
