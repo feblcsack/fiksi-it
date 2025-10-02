@@ -6,7 +6,9 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { auth, db } from '@/lib/firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { Music, User as UserIcon, LogIn } from 'lucide-react';
+import { Music, User as UserIcon } from 'lucide-react';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 
 type AuthMode = 'login' | 'register';
 type UserRole = 'user' | 'musisi';
@@ -36,8 +38,7 @@ export default function AuthPage() {
           uid: user.uid,
           email: user.email,
           role: role,
-          // Tambahkan field lain jika perlu, seperti name
-          name: email.split('@')[0], // Contoh nama default
+          name: email.split('@')[0],
         });
 
         // Arahkan sesuai peran
@@ -45,11 +46,7 @@ export default function AuthPage() {
 
       } else {
         // Logika Login
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        
-        // Di aplikasi nyata, kamu perlu fetch data user dari firestore untuk tahu rolenya
-        // lalu redirect. Untuk sekarang kita asumsikan redirect ke halaman user.
-        // Logika redirect yang lebih baik akan ada di langkah selanjutnya.
+        await signInWithEmailAndPassword(auth, email, password);
         router.push('/dashboard/user');
       }
     } catch (err: any) {
@@ -59,60 +56,131 @@ export default function AuthPage() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Simpan data user di Firestore kalau baru pertama kali login
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        role: "user", // default user (lo bisa ubah jadi musisi kalau perlu)
+      },
+      { merge: true } // biar gak overwrite kalau udah ada
+    );
+
+    // Arahkan ke dashboard sesuai role
+    router.push("/dashboard/user");
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center">
-          <LogIn className="mx-auto h-12 w-auto text-indigo-600" />
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-            {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
-          </h2>
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl font-light tracking-tight mb-2">
+            {mode === 'login' ? 'Welcome Back' : 'Get Started'}
+          </h1>
+          <p className="text-white/40 text-sm font-light">
+            {mode === 'login' ? 'Sign in to your account' : 'Create your account'}
+          </p>
         </div>
 
-        {/* Toggler Login/Register */}
-        <div className="flex justify-center">
+        {/* Mode Toggle */}
+        <div className="flex gap-px mb-8 border border-white/10">
           <button
             onClick={() => setMode('login')}
-            className={`px-4 py-2 text-sm font-medium rounded-l-md ${mode === 'login' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            className={`flex-1 py-3 text-sm font-medium tracking-wide transition-colors ${
+              mode === 'login' 
+                ? 'bg-white text-black' 
+                : 'bg-transparent text-white/40 hover:text-white'
+            }`}
           >
-            Login
+            LOGIN
           </button>
           <button
             onClick={() => setMode('register')}
-            className={`px-4 py-2 text-sm font-medium rounded-r-md ${mode === 'register' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            className={`flex-1 py-3 text-sm font-medium tracking-wide transition-colors ${
+              mode === 'register' 
+                ? 'bg-white text-black' 
+                : 'bg-transparent text-white/40 hover:text-white'
+            }`}
           >
-            Register
+            REGISTER
           </button>
         </div>
 
-        {/* Pilihan Role (hanya untuk register) */}
+        {/* Role Selection (Register only) */}
         {mode === 'register' && (
-          <div className="pt-4">
-            <label className="block text-sm font-medium text-gray-700 text-center mb-2">I am a...</label>
-            <div className="flex justify-center gap-4">
+          <div className="mb-8">
+            <label className="block text-xs font-mono text-white/40 uppercase tracking-wider mb-4">
+              Select Role
+            </label>
+            <div className="grid grid-cols-2 gap-px border border-white/10">
               <button
+                type="button"
                 onClick={() => setRole('user')}
-                className={`flex flex-col items-center justify-center w-28 h-24 p-4 border rounded-lg transition-colors ${role === 'user' ? 'bg-indigo-100 border-indigo-500' : 'bg-white'}`}
+                className={`flex flex-col items-center justify-center py-8 transition-colors ${
+                  role === 'user'
+                    ? 'bg-white/10'
+                    : 'bg-transparent hover:bg-white/5'
+                }`}
               >
-                <UserIcon className={`h-8 w-8 mb-1 ${role === 'user' ? 'text-indigo-600' : 'text-gray-400'}`} />
-                <span className="text-sm font-medium">User</span>
+                <UserIcon 
+                  className={`h-8 w-8 mb-3 ${
+                    role === 'user' ? 'text-white' : 'text-white/30'
+                  }`} 
+                />
+                <span className={`text-sm font-light ${
+                  role === 'user' ? 'text-white' : 'text-white/40'
+                }`}>
+                  User
+                </span>
               </button>
               <button
+                type="button"
                 onClick={() => setRole('musisi')}
-                className={`flex flex-col items-center justify-center w-28 h-24 p-4 border rounded-lg transition-colors ${role === 'musisi' ? 'bg-indigo-100 border-indigo-500' : 'bg-white'}`}
+                className={`flex flex-col items-center justify-center py-8 transition-colors ${
+                  role === 'musisi'
+                    ? 'bg-white/10'
+                    : 'bg-transparent hover:bg-white/5'
+                }`}
               >
-                <Music className={`h-8 w-8 mb-1 ${role === 'musisi' ? 'text-indigo-600' : 'text-gray-400'}`} />
-                <span className="text-sm font-medium">Musician</span>
+                <Music 
+                  className={`h-8 w-8 mb-3 ${
+                    role === 'musisi' ? 'text-white' : 'text-white/30'
+                  }`} 
+                />
+                <span className={`text-sm font-light ${
+                  role === 'musisi' ? 'text-white' : 'text-white/40'
+                }`}>
+                  Musician
+                </span>
               </button>
             </div>
           </div>
         )}
 
-        {/* Form Input */}
-        <form className="space-y-6" onSubmit={handleAuthAction}>
+        {/* Form */}
+        <form onSubmit={handleAuthAction} className="space-y-6">
           <div>
-            <label htmlFor="email" className="sr-only">Email address</label>
+            <label htmlFor="email" className="block text-xs font-mono text-white/40 uppercase tracking-wider mb-2">
+              Email
+            </label>
             <input
               id="email"
               name="email"
@@ -121,12 +189,15 @@ export default function AuthPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Email address"
+              className="w-full bg-transparent border border-white/10 px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 transition-colors font-light"
+              placeholder="your@email.com"
             />
           </div>
+
           <div>
-            <label htmlFor="password" className="sr-only">Password</label>
+            <label htmlFor="password" className="block text-xs font-mono text-white/40 uppercase tracking-wider mb-2">
+              Password
+            </label>
             <input
               id="password"
               name="password"
@@ -135,23 +206,45 @@ export default function AuthPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Password"
+              className="w-full bg-transparent border border-white/10 px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 transition-colors font-light"
+              placeholder="••••••••"
             />
           </div>
-          
-          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
-            >
-              {isLoading ? 'Processing...' : (mode === 'login' ? 'Sign in' : 'Create account')}
-            </button>
-          </div>
+          <div className="mt-6">
+  <button
+    type="button"
+    onClick={handleGoogleLogin}
+    disabled={isLoading}
+    className="w-full flex items-center justify-center gap-3 border border-white/20 py-3 text-sm font-medium tracking-wide hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="h-5 w-5" />
+    Continue with Google
+  </button>
+</div>
+
+
+          {error && (
+            <div className="border border-red-500/20 bg-red-500/10 px-4 py-3">
+              <p className="text-sm text-red-400 font-light">{error}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-white text-black py-3 text-sm font-medium tracking-wide hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'PROCESSING...' : mode === 'login' ? 'SIGN IN' : 'CREATE ACCOUNT'}
+          </button>
         </form>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-white/20 font-light">
+            By continuing, you agree to our terms
+          </p>
+        </div>
       </div>
     </div>
   );

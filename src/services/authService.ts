@@ -6,7 +6,7 @@ import {
   User as FirebaseUser,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase/config";
 import { User, UserRole } from "@/types";
 
 export const signUp = async (
