@@ -1,14 +1,15 @@
-// app/layout.tsx
+// src/app/layout.tsx
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/lib/hooks/useAuth"; // Impor AuthProvider
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LiveGig Lokal - Temukan Event Musik Terdekat",
-  description: "Platform untuk menemukan dan mengelola event live music lokal",
+  title: "GigFinder",
+  description: "Discover local live gigs",
 };
 
 export default function RootLayout({
@@ -17,8 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
+    <html lang="en">
       <body className={inter.className}>
+        {/* Bungkus semua children dengan AuthProvider */}
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
