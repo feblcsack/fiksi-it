@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="relative bg-muted/50 border-t border-border">
       <div className="max-w-7xl mx-auto px-6 py-16 text-center">
         <div className="text-center mb-12">
-          <h2 className="text-8xl select-none md:text-9xl font-mono tracking-[-0.1em] text-muted-foreground font-light">WAV_0</h2>
+          <h2 className="text-8xl select-none md:text-9xl font-mono tracking-[-0.1em] text-muted-foreground font-light">MUSIONIC</h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 text-sm">
@@ -65,7 +65,7 @@ export function Footer() {
         </div>
 
         <div className="text-center pt-8 border-t border-border">
-          <p className="text-xs text-muted-foreground">© 2025 WAV0. Open-source AI music studio.</p>
+          <p className="text-xs text-muted-foreground">© 2025 Musionic. Open-source AI music studio.</p>
         </div>
       </div>
     </footer>

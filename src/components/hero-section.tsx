@@ -31,7 +31,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      <PulsingCircle />
+      {/* <PulsingCircle /> */}
     </section>
   )
 }

@@ -10,13 +10,16 @@ export default function WAV0Landing() {
   return (
     <div className="min-h-screen bg-background relative">
       {/* <Client3DScene /> */}
-      <DynamicBackground />
+      <div className="display-none">
+           <DynamicBackground/>
+      </div>
+   
 
       <div className="relative z-10">
         <HeroSection />
 
         <main>
-          <FeatureSection
+          {/* <FeatureSection
             title="WAV0 AI Agent"
             description="Just ask and it turns your idea to sound in seconds. Music Generation powered by ElevenLabs. Built with AI SDK."
             icon={<Bot size={40} />}
@@ -24,24 +27,24 @@ export default function WAV0Landing() {
             index={0}
             metric="<10s"
             metricLabel="Effects Gen"
-          />
+          /> */}
 
           <FeatureSection
-            title="Music Studio"
+            title="Music cover"
             description="Browser-native DAW with zero downloads. Edit, create soundpacks, export to any format. Faster than stock sites."
             icon={<Sliders size={40} />}
             delay={0.2}
-            index={1}
+            index={0}
             metric="Zero"
             metricLabel="Friction Export"
           />
 
           <FeatureSection
-            title="Music Vault"
+            title="Near live gigs"
             description="Secure flexible storage for your music. Easily store and have control over who has access to your music. Private by default."
             icon={<Archive size={40} />}
             delay={0.3}
-            index={2}
+            index={1}
             metric="Private"
             metricLabel="By Default"
           />
@@ -51,7 +54,7 @@ export default function WAV0Landing() {
             description="Easily toggle between versions of your audio files in Vault and generations in WAV0 Agent."
             icon={<FileText size={40} />}
             delay={0.4}
-            index={3}
+            index={2}
             metric="1-Click"
             metricLabel="Rollback"
           />
