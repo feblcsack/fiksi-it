@@ -17,7 +17,7 @@ export default function PricingPage() {
             Find your rhythm
           </h1>
           <p className="mt-4 text-pretty text-base text-muted-foreground md:text-lg">
-            Minimal, elegant plans tuned for deep listening.
+            Choose your best plan.
           </p>
         </header>
 
@@ -27,7 +27,7 @@ export default function PricingPage() {
         >
           <PlanCard
             name="Intro"
-            price="$5"
+            price="Rp15.000"
             period="/mo"
             description="Start your set with essential features."
             features={[
@@ -41,7 +41,7 @@ export default function PricingPage() {
 
           <PlanCard
             name="Ensemble"
-            price="$12"
+            price="Rp50.000"
             period="/mo"
             description="A richer mix for regular listeners."
             features={[
@@ -57,7 +57,7 @@ export default function PricingPage() {
 
           <PlanCard
             name="Headliner"
-            price="$20"
+            price="Rp70.000"
             period="/mo"
             description="Premium sound and priority features."
             features={[
@@ -72,7 +72,7 @@ export default function PricingPage() {
         </section>
 
         <footer className="mx-auto mt-12 max-w-3xl text-center text-sm text-muted-foreground md:mt-16">
-          Prices in USD. Cancel anytime. Taxes may apply.
+          Prices in IDR. Cancel anytime. Taxes may apply.
         </footer>
       </main>
     </>

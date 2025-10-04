@@ -1,4 +1,3 @@
-// src/components/AddCoverModal.tsx
 "use client";
 
 import { useState, useEffect, FormEvent, Fragment } from "react";

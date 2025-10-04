@@ -49,7 +49,7 @@ export function ChatPill() {
           <div className="flex items-center gap-2">
             <AudioWaveformIcon size={16} className="text-foreground/60" aria-hidden="true" />
             <span className="text-xs sm:text-sm text-foreground/80 font-medium whitespace-nowrap text-left tracking-tight truncate">
-              Create with WAV0  
+              Contact Us
             </span>
           </div>
           <motion.span

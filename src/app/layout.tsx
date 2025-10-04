@@ -1,18 +1,21 @@
 // src/app/layout.tsx
-import type React from "react"
-import type { Metadata } from "next"
-import "./globals.css"
-import { Inter, Playfair_Display } from "next/font/google"
-import { Providers } from "./Providers" // Client wrapper
-import { ThemeProvider } from "@/components/theme-provider"
-import { Analytics } from "@vercel/analytics/next"
-import { Suspense } from "react"
+import type React from "react";
+import type { Metadata } from "next";
+import "./globals.css";
+import { Inter, Playfair_Display } from "next/font/google";
+import { Providers } from "./Providers"; // Client wrapper
+import { ThemeProvider } from "@/components/theme-provider";
+import { Analytics } from "@vercel/analytics/next";
+import { Suspense } from "react";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
 
 export const metadata: Metadata = {
-  title: "GigFinder | WAV0 - The Open-Source AI Native Music Studio",
+  title: "musionic",
   description:
     "Discover live gigs nearby and create music effortlessly. From idea to sound in seconds with WAV0 AI Music Studio.",
   icons: {
@@ -23,12 +26,12 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   generator: "v0.app",
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="dark">
@@ -41,7 +44,12 @@ export default function RootLayout({
       <body
         className={`m-0 p-0 h-full w-full antialiased font-sans ${inter.variable} ${playfair.variable}`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
           <Suspense fallback={null}>
             <a
               href="#main-content"
@@ -55,5 +63,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
