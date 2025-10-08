@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     // Panggil fungsi server-side untuk mendapatkan Spotify Track ID
-    const spotifyTrackId = await getSpotifyTrackId(title, artist);
+    const spotifyTrackId = await getSpotifyTrackId(title);
 
     // Simpan ke Firestore
     const songsCollection = collection(db, "songs");
