@@ -1,86 +1,84 @@
-import type { Metadata } from "next"
-import { Hero } from "@/components/hero"
-import { CoverCard } from "@/components/cover-card"
-import { Navbar } from "@/components/organisms/Navbar"
+"use client";
 
-export const metadata: Metadata = {
-  title: "Covers • Listen in Style",
-  description: "A minimalist, elegant collection of sophisticated cover songs.",
+import { useEffect, useState } from "react";
+import { Hero } from "@/components/hero";
+import { CoverCard } from "@/components/cover-card";
+import { Navbar } from "@/components/organisms/Navbar";
+import { db } from "@/lib/firebase/config"; // path yang sama kayak di upload
+import { collection, getDocs, orderBy, query, limit } from "firebase/firestore";
+
+interface Cover {
+  id: string;
+  title: string;
+  originalArtist: string;
+  coverArtist: string;
+  imageSrc: string;
+  description: string;
+  audioSrc?: string;
+  bandName?: string;
+  bandLogo?: string;
 }
 
-const featured = [
-  {
-    title: "Autumn Leaves",
-    originalArtist: "Joseph Kosma",
-    coverArtist: "Lena Hart Trio",
-    imageSrc: "/epo.jpg",
-    description: "A dusky, intimate rendition with brushed drums and delicate piano voicings.",
-    href: "#",
-  },
-  {
-    title: "Blue in Green",
-    originalArtist: "Miles Davis",
-    coverArtist: "Nocturne Collective",
-    imageSrc: "/moody-minimal-album-cover.jpg",
-    description: "Minimalist textures and slow-burning harmonies for late-night sessions.",
-    href: "#",
-  },
-  {
-    title: "My Funny Valentine",
-    originalArtist: "Rodgers & Hart",
-    coverArtist: "Etta Cole Quartet",
-    imageSrc: "/elegant-classic-vinyl-cover.jpg",
-    description: "A warm, velvety vocal with understated bass and gentle cymbal swells.",
-    href: "#",
-  },
-  {
-    title: "Round Midnight",
-    originalArtist: "Thelonious Monk",
-    coverArtist: "Grey Room Ensemble",
-    imageSrc: "/monochrome-jazz-cover-art.jpg",
-    description: "Sparse, expressive phrasing that lets every note breathe.",
-    href: "#",
-  },
-  {
-    title: "Summertime",
-    originalArtist: "Gershwin",
-    coverArtist: "Amber Lights",
-    imageSrc: "/abstract-warm-amber-cover.jpg",
-    description: "A dreamy reharmonization with airy guitar voicings and subtle percussion.",
-    href: "#",
-  },
-  {
-    title: "Body and Soul",
-    originalArtist: "Green/Heyman/Sour/Eyton",
-    coverArtist: "Noir Atlas",
-    imageSrc: "/minimal-noir-album-cover.jpg",
-    description: "Deep, resonant tones and a slow pulse for a late-night glow.",
-    href: "#",
-  },
-]
-
 export default function Page() {
+  const [featured, setFeatured] = useState<Cover[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCovers = async () => {
+      try {
+        const coversCollection = collection(db, "covers");
+        const q = query(coversCollection, orderBy("createdAt", "desc"), limit(6));
+        const snapshot = await getDocs(q);
+        const coverList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Cover),
+        }));
+        setFeatured(coverList);
+      } catch (err) {
+        console.error("Error fetching covers:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCovers();
+  }, []);
+
   return (
     <main>
-        <Navbar/>
+      <Navbar />
       <Hero />
-
-      <section id="featured" aria-labelledby="featured-heading" className="container mx-auto px-4 pb-16 md:pb-24">
+      <section
+        id="featured"
+        aria-labelledby="featured-heading"
+        className="container mx-auto px-4 pb-16 md:pb-24"
+      >
         <div className="mb-6 flex items-end justify-between md:mb-10">
           <div>
-            <h2 id="featured-heading" className="font-serif text-2xl font-semibold md:text-3xl">
+            <h2
+              id="featured-heading"
+              className="font-serif text-2xl font-semibold md:text-3xl"
+            >
               Featured Covers
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">Curated selections with a warm, minimalist aesthetic.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Curated selections with a warm, minimalist aesthetic.
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((item) => (
-            <CoverCard key={item.title} {...item} />
-          ))}
-        </div>
+        {isLoading ? (
+          <p>Loading covers...</p>
+        ) : featured.length === 0 ? (
+          <p className="text-muted-foreground">No covers uploaded yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((item) => (
+              <CoverCard key={item.id} {...item} />
+            ))}
+          </div>
+        )}
       </section>
     </main>
-  )
+  );
 }

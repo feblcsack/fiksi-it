@@ -60,7 +60,7 @@ export default function WAV0Landing() {
           />
         </main>
 
-        <Footer />
+        <Footer />  
 
         <ChatPill />
       </div>
