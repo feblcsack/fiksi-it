@@ -14,6 +14,7 @@ import {
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Dialog } from "@headlessui/react";
 import { Navbar } from "../../../../components/organisms/Navbar";
+import { Footer } from "@/components/footer";
 
 interface Gig {
   id: string;
@@ -132,6 +133,7 @@ export default function MusicianLandingPage() {
               </div>
             )}
           </div>
+          <Footer/>
         </div>
 
         {/* Modal with Headless UI Dialog */}

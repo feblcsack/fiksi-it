@@ -6,6 +6,7 @@ import { CoverCard } from "@/components/cover-card";
 import { Navbar } from "@/components/organisms/Navbar";
 import { db } from "@/lib/firebase/config"; // path yang sama kayak di upload
 import { collection, getDocs, orderBy, query, limit } from "firebase/firestore";
+import { Footer } from "../../../../components/footer";
 
 interface Cover {
   id: string;
@@ -65,6 +66,7 @@ export default function Page() {
               Curated selections with a warm, minimalist aesthetic.
             </p>
           </div>
+          <Footer/>
         </div>
 
         {isLoading ? (
@@ -78,6 +80,8 @@ export default function Page() {
             ))}
           </div>
         )}
+
+
       </section>
     </main>
   );
