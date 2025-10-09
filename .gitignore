@@ -20,6 +20,10 @@
 # production
 /build
 
+# Ignore Firebase credentials
+keys/serviceAccountKey.json
+
+
 # misc
 .DS_Store
 *.pem
