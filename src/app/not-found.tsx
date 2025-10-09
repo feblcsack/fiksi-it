@@ -1,17 +1,21 @@
-"use client";
+// app/not-found.tsx
 
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import React, { Suspense } from 'react';
+import NotFoundClient from './NotFoundClient'; // Sesuaikan path jika perlu
 
-// Lazy-load komponen yang pakai useSearchParams biar gak di-render saat build
-const NotFoundContent = dynamic(() => import("./NotFoundContent"), {
-  ssr: false, // <== ini kuncinya biar ga di-render di server
-});
+// Ini adalah Server Component yang membungkus Client Component
+export default function NotFound(): React.ReactElement {
+  // Konten fallback ini akan dirender di server saat proses build
+  const fallbackContent = (
+    <div>
+      <h1>404 - Halaman Tidak Ditemukan</h1>
+      <p>Maaf, halaman yang Anda cari tidak ada.</p>
+    </div>
+  );
 
-export default function NotFoundPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <NotFoundContent />
+    <Suspense fallback={fallbackContent}>
+      <NotFoundClient />
     </Suspense>
   );
 }
