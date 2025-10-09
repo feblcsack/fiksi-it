@@ -1,4 +1,5 @@
 // src/app/home/page.tsx
+export const dynamic = "force-dynamic";
 import { CoverCard } from "@/components/CoverCard";
 import { db } from "@/lib/firebase/config";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
