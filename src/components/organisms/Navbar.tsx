@@ -7,7 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { NavLinks } from "../molecules/NavLinks";
 import { UserProfile } from "../molecules/UserProfiles";
 import Link from "next/link";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface UserData {
@@ -21,6 +21,15 @@ export function Navbar() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -63,130 +72,202 @@ export function Navbar() {
 
   if (loading) {
     return (
-      <header className="border-b border-white/10 bg-black">
-        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-          <div className="h-6 w-24 bg-white/5 animate-pulse" />
-          <div className="h-8 w-32 bg-white/5 animate-pulse rounded-full" />
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <div className="mx-auto max-w-7xl px-6 py-4">
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 px-6 py-3">
+            <div className="flex items-center justify-between">
+              <div className="h-6 w-28 bg-white/10 animate-pulse rounded-lg" />
+              <div className="h-9 w-36 bg-white/10 animate-pulse rounded-full" />
+            </div>
+          </div>
         </div>
       </header>
     );
   }
 
   return (
-    <header className="border-b border-white/10 bg-black sticky top-0 z-50">
-      <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-        {/* Logo/Brand */}
-        <Link
-          href="/dashboard/homeMuc"
-          className="font-serif text-xl tracking-tight text-white"
+    <header className="fixed top-0 left-0 right-0 z-50">
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="mx-auto max-w-7xl px-4 sm:px-6 py-4"
+      >
+        <nav
+          className={`relative backdrop-blur-xl rounded-2xl border transition-all duration-300 ${
+            scrolled
+              ? "bg-black/80 border-white/20 shadow-2xl shadow-white/5"
+              : "bg-black/60 border-white/10"
+          }`}
         >
-          GigsFind
-        </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          <NavLinks />
-          {userData ? (
-            <div className="flex items-center gap-4">
-              <UserProfile
-                photoURL={userData.photoURL}
-                displayName={userData.displayName}
-                email={userData.email}
-              />
-              <button
-                onClick={handleLogout}
-                className="text-sm text-white/60 hover:text-white flex items-center gap-1 transition-colors"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
-            </div>
-          ) : (
+          <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
+            {/* Logo with gradient effect */}
             <Link
-              href="/login"
-              className="text-sm text-white/60 hover:text-white transition-colors"
+              href="/dashboard/homeMuc"
+              className="group flex items-center gap-2"
             >
-              Login
+              <motion.div
+                whileHover={{ rotate: 180 }}
+                transition={{ duration: 0.5 }}
+                className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center"
+              >
+                <Sparkles size={18} className="text-white" />
+              </motion.div>
+              <span className="font-bold text-xl bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
+                GigsFind
+              </span>
             </Link>
-          )}
-        </div>
 
-        {/* Mobile Hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-white focus:outline-none"
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Animated Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="md:hidden border-t border-white/10 bg-black/95 backdrop-blur-md shadow-lg"
-          >
-            <nav className="flex flex-col p-4 space-y-4">
-              <Link
-                href="/dashboard/homeMuc"
-                className="text-white/80 hover:text-white"
-                onClick={() => setMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                href="/dashboard/musisi"
-                className="text-white/80 hover:text-white"
-                onClick={() => setMenuOpen(false)}
-              >
-                Gigs
-              </Link>
-              <Link
-                href="/pricing"
-                className="text-white/80 hover:text-white"
-                onClick={() => setMenuOpen(false)}
-              >
-                Pricing
-              </Link>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-2">
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5">
+                <NavLinks />
+              </div>
 
               {userData ? (
-                <>
-                  <Link
-                    href="/profile"
-                    className="text-white/80 hover:text-white"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
+                <div className="flex items-center gap-2 ml-2">
+                  <UserProfile
+                    photoURL={userData.photoURL}
+                    displayName={userData.displayName}
+                    email={userData.email}
+                  />
                   <motion.button
+                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-sm text-white/80 hover:text-white"
                   >
                     <LogOut size={16} />
-                    Logout
+                    <span className="hidden lg:inline">Logout</span>
                   </motion.button>
-                </>
+                </div>
               ) : (
                 <Link
                   href="/login"
-                  className="text-white/80 hover:text-white"
-                  onClick={() => setMenuOpen(false)}
+                  className="ml-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium text-white shadow-lg shadow-purple-500/25"
                 >
                   Login
                 </Link>
               )}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+
+            {/* Mobile Hamburger */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+            >
+              <AnimatePresence mode="wait">
+                {menuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X size={20} className="text-white" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu size={20} className="text-white" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
+
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {menuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="md:hidden overflow-hidden border-t border-white/10"
+              >
+                <nav className="px-4 py-4 space-y-1">
+                  {[
+                    { href: "/dashboard/homeMuc", label: "Home" },
+                    { href: "/dashboard/musisi", label: "Gigs" },
+                    { href: "/pricing", label: "Pricing" },
+                  ].map((link, index) => (
+                    <motion.div
+                      key={link.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <Link
+                        href={link.href}
+                        className="block px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    </motion.div>
+                  ))}
+
+                  {userData ? (
+                    <>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.15 }}
+                      >
+                        <Link
+                          href="/profile"
+                          className="block px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <button
+                          onClick={() => {
+                            setMenuOpen(false);
+                            handleLogout();
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-red-500/10 transition-all"
+                        >
+                          <LogOut size={18} />
+                          Logout
+                        </button>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.15 }}
+                    >
+                      <Link
+                        href="/login"
+                        className="block px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center font-medium"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Login
+                      </Link>
+                    </motion.div>
+                  )}
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </nav>
+      </motion.div>
     </header>
   );
 }
