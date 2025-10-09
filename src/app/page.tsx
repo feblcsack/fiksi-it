@@ -5,10 +5,13 @@ import { ChatPill } from "@/components/chat-pill"
 import { DynamicBackground } from "@/components/dynamic-background"
 import { Footer } from "@/components/footer"
 import { Client3DScene } from "@/components/client-3d-scene"
+import { Navbar } from "@/components/organisms/Navbar"
 
 export default function WAV0Landing() {
   return (
+    
     <div className="min-h-screen bg-background relative">
+      <Navbar />
       {/* <Client3DScene /> */}
       <div className="display-none">
            <DynamicBackground/>
