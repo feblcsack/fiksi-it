@@ -102,6 +102,7 @@ export function Navbar() {
         >
           <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
             {/* Logo with gradient effect */}
+            {/* Logo minimalist dark */}
             <Link
               href="/dashboard/homeMuc"
               className="group flex items-center gap-2"
@@ -109,13 +110,11 @@ export function Navbar() {
               <motion.div
                 whileHover={{ rotate: 180 }}
                 transition={{ duration: 0.5 }}
-                className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center"
+                className="h-8 w-8 rounded-lg bg-slate-800 flex items-center justify-center shadow-sm"
               >
-                <Sparkles size={18} className="text-white" />
+                <Sparkles size={18} className="text-slate-200" />
               </motion.div>
-              <span className="font-bold text-xl bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
-                GigsFind
-              </span>
+              <span className="font-bold text-xl text-slate-100">Musionic</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -144,7 +143,7 @@ export function Navbar() {
               ) : (
                 <Link
                   href="/login"
-                  className="ml-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium text-white shadow-lg shadow-purple-500/25"
+                  className="ml-2 px-5 py-2 rounded-full bg-slate-800 hover:bg-slate-700 transition-colors text-sm font-medium text-white shadow-sm"
                 >
                   Login
                 </Link>
@@ -255,7 +254,7 @@ export function Navbar() {
                     >
                       <Link
                         href="/login"
-                        className="block px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center font-medium"
+                        className="block px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-center font-medium transition-colors"
                         onClick={() => setMenuOpen(false)}
                       >
                         Login
