@@ -24,7 +24,7 @@ function SkeletonText({ width = "w-full" }: { width?: string }) {
 
 // Loading States
 const LoadingNavbar = () => (
-  <div className="bg-white/80 backdrop-blur-sm border-b border-slate-600/50">
+  <div className="bg-slate/80 backdrop-blur-sm border-b border-slate-600/50">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-16">
         <SkeletonBox className="h-5 w-24" />
