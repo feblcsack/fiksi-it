@@ -133,7 +133,7 @@ export default function MusicianLandingPage() {
               </div>
             )}
           </div>
-          <Footer/>
+       
         </div>
 
         {/* Modal with Headless UI Dialog */}
@@ -163,6 +163,7 @@ export default function MusicianLandingPage() {
             </Dialog.Panel>
           </div>
         </Dialog>
+        <Footer/>
       </div>
     </>
   );

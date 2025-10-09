@@ -48,7 +48,10 @@ export default function Page() {
   return (
     <main>
       <Navbar />
+      <div className="pt-16 md:pt-16">
       <Hero />
+      </div>
+   
       <section
         id="featured"
         aria-labelledby="featured-heading"
@@ -66,7 +69,7 @@ export default function Page() {
               Curated selections with a warm, minimalist aesthetic.
             </p>
           </div>
-          <Footer/>
+          
         </div>
 
         {isLoading ? (
@@ -83,6 +86,7 @@ export default function Page() {
 
 
       </section>
+      <Footer/>
     </main>
   );
 }

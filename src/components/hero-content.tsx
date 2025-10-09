@@ -15,7 +15,7 @@ export default function HeroContent() {
           <div className="absolute top-0 left-1 right-1 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent rounded-full" />
           <span className="text-muted-foreground text-xs md:text-sm relative z-10 font-light">
             {" "}
-            Find Gigs near you.
+            Find Your Own Song.
           </span>
         </div>
       </div>
@@ -29,13 +29,12 @@ export default function HeroContent() {
         </span>
         <br />
         <span className="font-light text-md text-foreground tracking-tight">
-          Live Gigs Session
+          Music Covers
         </span>
       </h1>
 
       <p className="font-light text-muted-foreground mb-8 leading-relaxed max-w-xl mx-auto font-mono tracking-tight text-balance text-xs md:text-sm">
-        Turn ideas to music in seconds. The AI-Native Music Studio that
-        transforms your creative vision into professional tracks.
+      Turn ideas into music in seconds. musionic lets musicians make their own flavour of music and you to find another version of your favourite music
       </p>
 
       <div className="flex items-center gap-4 flex-wrap justify-center">

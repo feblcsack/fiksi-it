@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sliders, Archive, FileText } from "lucide-react";
+import { Music, MapPin, Shuffle } from "lucide-react";
 import { HeroSection } from "@/components/hero-section";
 import { FeatureSection } from "@/components/feature-section";
 import { ChatPill } from "@/components/chat-pill";
@@ -183,7 +183,7 @@ export default function WAV0Landing() {
 
       <div className="min-h-screen bg-background relative pt-16 md:pt-16">
         {/* Optional backgrounds */}
-        <div className="hidden">
+        <div className="">
           <DynamicBackground />
         </div>
 
@@ -223,34 +223,34 @@ export default function WAV0Landing() {
 
                 {/* Actual Features */}
                 <main>
-                  <FeatureSection
-                    title="Music cover"
-                    description="Browser-native DAW with zero downloads. Edit, create soundpacks, export to any format. Faster than stock sites."
-                    icon={<Sliders size={40} />}
-                    delay={0.2}
-                    index={0}
-                    metric="Zero"
-                    metricLabel="Friction Export"
-                  />
-                  <FeatureSection
-                    title="Near live gigs"
-                    description="Secure flexible storage for your music. Easily store and have control over who has access to your music. Private by default."
-                    icon={<Archive size={40} />}
-                    delay={0.3}
-                    index={1}
-                    metric="Private"
-                    metricLabel="By Default"
-                  />
-                  <FeatureSection
-                    title="Version Control"
-                    description="Easily toggle between versions of your audio files in Vault and generations in WAV0 Agent."
-                    icon={<FileText size={40} />}
-                    delay={0.4}
-                    index={2}
-                    metric="1-Click"
-                    metricLabel="Rollback"
-                  />
-                </main>
+  <FeatureSection
+    title="Upload Music Covers"
+    description="Local artists can easily upload covers of their favorite songs. Search tracks, submit your cover, and compare it with the original version in an interactive player."
+    icon={<Music size={40} />}
+    delay={0.2}
+    index={0}
+    metric="Unlimited"
+    metricLabel="Uploads"
+  />
+  <FeatureSection
+    title="Discover Live Gigs"
+    description="Find live gigs and music sessions near you. Filter by location and favorite genres so you never miss a local performance."
+    icon={<MapPin size={40} />}
+    delay={0.3}
+    index={1}
+    metric="Nearby"
+    metricLabel="Sessions"
+  />
+  <FeatureSection
+    title="Compare Covers"
+    description="Easily compare your uploaded covers with the original tracks. Get insights and feedback from the music community to improve your skills."
+    icon={<Shuffle size={40} />}
+    delay={0.4}
+    index={2}
+    metric="Interactive"
+    metricLabel="Player"
+  />
+</main>
 
                 {/* Actual Footer */}
                 <Footer />

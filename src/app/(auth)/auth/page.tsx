@@ -58,7 +58,7 @@ export default function AuthPage() {
 
         // Redirect sesuai role
         router.push(
-          role === "musisi" ? "/dashboard/homeMuc" : "/dashboard/user",
+          role === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc",
         );
       } else {
         // Login - cek role dari Firestore
@@ -78,11 +78,11 @@ export default function AuthPage() {
 
           // Redirect sesuai role yang tersimpan
           router.push(
-            userRole === "musisi" ? "/dashboard/homeMuc" : "/dashboard/user",
+            userRole === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc",
           );
         } else {
           // Kalo data gak ada di Firestore, redirect ke user dashboard
-          router.push("/dashboard/user");
+          router.push("/dashboard/homeMuc");
         }
       }
     } catch (err: any) {
@@ -133,7 +133,7 @@ export default function AuthPage() {
       const userRole = userData.role || "user";
 
       router.push(
-        userRole === "musisi" ? "/dashboard/homeMuc" : "/dashboard/user",
+        userRole === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc",
       );
     } catch (err: any) {
       if (err.code === "auth/popup-closed-by-user") {
@@ -186,7 +186,7 @@ export default function AuthPage() {
       });
 
       // Redirect sesuai role
-      router.push(role === "musisi" ? "/dashboard/homeMuc" : "/dashboard/user");
+      router.push(role === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc");
     } catch (err: any) {
       if (err.code === "auth/popup-closed-by-user") {
         setError("Google registration cancelled.");
