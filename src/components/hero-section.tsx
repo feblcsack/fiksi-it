@@ -26,9 +26,9 @@ export function HeroSection() {
           </div>
         </motion.div>
 
-        <div className="absolute top-4 left-4 md:top-6 md:left-6 z-40">
+        {/* <div className="absolute top-4 left-4 md:top-6 md:left-6 z-40">
           <ThemeToggle />
-        </div>
+        </div> */}
       </div>
 
       {/* <PulsingCircle /> */}
