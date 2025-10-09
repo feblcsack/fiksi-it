@@ -7,6 +7,7 @@ import { Providers } from "./Providers"; // Client wrapper
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
+import RouteProgress from "@/components/RouteProgress"; // ✅ Tambahin ini
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
@@ -44,6 +45,9 @@ export default function RootLayout({
       <body
         className={`m-0 p-0 h-full w-full antialiased font-sans ${inter.variable} ${playfair.variable}`}
       >
+        {/* ✅ Progress bar tiap kali route berubah */}
+        <RouteProgress />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
