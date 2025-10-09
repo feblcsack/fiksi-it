@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-
-  
   reactStrictMode: true,
   images: {
     domains: [
@@ -11,11 +9,11 @@ const nextConfig: NextConfig = {
     ],
   },
   eslint: {
-    // ⚠️ Ini buat skip error ESLint waktu build (biar Vercel gak gagal)
+    // ⚠️ Biar Vercel gak gagal gara-gara ESLint
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // ⚠️ Ini buat skip error type-check waktu build (opsional, bisa lu matiin lagi nanti)
+    // ⚠️ Biar build gak gagal gara-gara error TypeScript
     ignoreBuildErrors: true,
   },
 };
