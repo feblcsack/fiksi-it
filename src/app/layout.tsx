@@ -7,7 +7,7 @@ import { Providers } from "./Providers"; // Client wrapper
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
-import RouteProgress from "@/components/RouteProgress"; // ✅ Tambahin ini
+import RouteProgress from "@/components/RouteProgress"; // NProgress wrapper
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
@@ -45,8 +45,10 @@ export default function RootLayout({
       <body
         className={`m-0 p-0 h-full w-full antialiased font-sans ${inter.variable} ${playfair.variable}`}
       >
-        {/* ✅ Progress bar tiap kali route berubah */}
-        <RouteProgress />
+        {/* ✅ Suspense untuk NProgress */}
+        <Suspense fallback={null}>
+          <RouteProgress />
+        </Suspense>
 
         <ThemeProvider
           attribute="class"
@@ -55,14 +57,18 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Suspense fallback={null}>
+            {/* Skip link aksesibilitas */}
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg"
             >
               Skip to content
             </a>
+
+            {/* Provider client */}
             <Providers>{children}</Providers>
           </Suspense>
+
           <Analytics />
         </ThemeProvider>
       </body>
