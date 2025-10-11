@@ -34,7 +34,7 @@ export const mainNavigation: NavItem[] = [
     icon: FileText,
     items: [
       { href: "/dashboard/musisi/upload", label: "Upload" },
-      { href: "/resources/tutorials", label: "Tutorials" },
+      { href: "/dashboard/user", label: "Live Gigs" },
       { href: "/resources/faq", label: "FAQ" },
     ],
   },

@@ -108,12 +108,12 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
   if (!isOpen || !cover) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/80 backdrop-blur-md p-4">
+      <div className="relative w-full max-w-4xl bg-neutral-50 dark:bg-neutral-900 rounded-3xl shadow-xl overflow-hidden animate-fadeIn border border-white/10">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-neutral-800/50 hover:bg-neutral-700/70 text-neutral-100 transition-all backdrop-blur-sm"
         >
           <X className="w-6 h-6" />
         </button>
@@ -121,7 +121,7 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
         <div className="grid md:grid-cols-2 gap-6 p-6 md:p-8">
           {/* Left Side - Image */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg">
+            <div className="relative aspect-square rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
               <Image
                 src={cover.imageSrc}
                 alt={cover.title}
@@ -132,7 +132,7 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
             </div>
             
             {cover.bandLogo && (
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3 p-4 bg-neutral-100 dark:bg-neutral-800/60 rounded-xl backdrop-blur-sm border border-white/10 transition-all">
                 <Image
                   src={cover.bandLogo}
                   alt={cover.bandName || "Band"}
@@ -140,7 +140,7 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
                   height={48}
                   className="rounded-full object-cover"
                 />
-                <span className="font-medium text-gray-900">{cover.bandName}</span>
+                <span className="font-medium text-slate-300">{cover.bandName}</span>
               </div>
             )}
           </div>
@@ -149,15 +149,15 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
           <div className="flex flex-col justify-between">
             <div className="space-y-4">
               <div>
-                <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2">
+                <h2 className="text-3xl font-semibold text-neutral-900 dark:text-white tracking-tight mb-3">
                   {cover.title}
                 </h2>
                 <div className="space-y-1 text-sm">
-                  <p className="text-gray-600">
+                  <p className="text-neutral-600 dark:text-neutral-400">
                     <span className="font-medium">Cover by:</span> {cover.coverArtist}
                   </p>
                   {cover.originalArtist && (
-                    <p className="text-gray-600">
+                    <p className="text-neutral-600 dark:text-neutral-400">
                       <span className="font-medium">Original by:</span> {cover.originalArtist}
                     </p>
                   )}
@@ -165,8 +165,8 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
               </div>
 
               {cover.description && (
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                <div className="p-4 bg-neutral-100 dark:bg-neutral-800/70 rounded-xl backdrop-blur-sm border border-white/10">
+                  <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
                     {cover.description}
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
                     max={duration || 0}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                    className="w-full h-2 bg-neutral-300 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-neutral-900 dark:accent-white"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
                     <span>{formatTime(currentTime)}</span>
@@ -195,10 +195,10 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mt-2">
                   <button
                     onClick={togglePlay}
-                    className="p-4 bg-black text-white rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl"
+                    className="p-4 bg-neutral-900 dark:bg-neutral-200 text-white dark:text-neutral-900 rounded-full shadow-md hover:scale-105 transition-all duration-300"
                   >
                     {isPlaying ? (
                       <Pause className="w-6 h-6" fill="currentColor" />
@@ -230,8 +230,8 @@ export default function CoverPlayerModal({ isOpen, onClose, cover }: CoverPlayer
             )}
 
             {!cover.audioSrc && (
-              <div className="mt-6 p-4 bg-gray-100 rounded-lg text-center">
-                <p className="text-sm text-gray-600">No audio available for this cover</p>
+              <div className="mt-6 p-4 bg-neutral-100 dark:bg-neutral-800/70 rounded-xl text-center border border-white/10">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">No audio available for this cover</p>
               </div>
             )}
           </div>
