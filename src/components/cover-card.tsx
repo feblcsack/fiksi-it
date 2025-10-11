@@ -1,55 +1,81 @@
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+"use client";
 
-type CoverCardProps = {
-  title: string
-  originalArtist: string
-  coverArtist: string
-  imageSrc: string
-  description: string
-  href?: string
+import Image from "next/image";
+import { Play } from "lucide-react";
+
+interface CoverCardProps {
+  id: string;
+  title: string;
+  originalArtist: string;
+  coverArtist: string;
+  imageSrc: string;
+  description: string;
+  audioSrc?: string;
+  bandName?: string;
+  bandLogo?: string;
+  onClick?: () => void;
 }
 
-export function CoverCard({ title, originalArtist, coverArtist, imageSrc, description, href = "#" }: CoverCardProps) {
-  const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-title`
+export function CoverCard({
+  title,
+  originalArtist,
+  coverArtist,
+  imageSrc,
+  audioSrc,
+  onClick,
+}: CoverCardProps) {
   return (
-    <Card
-      className="group h-full overflow-hidden border-border/60 bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-sm hover:ring-1 hover:ring-primary/25"
-      role="article"
-      aria-labelledby={headingId}
+    <div
+      onClick={onClick}
+      className="group cursor-pointer transition-all duration-300 hover:-translate-y-2"
     >
-      <CardHeader className="space-y-3">
-        <div className="aspect-square w-full overflow-hidden rounded-md border border-border/40">
-          <img
-            src={imageSrc || "/placeholder.svg"}
-            alt={`${title} cover art`}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-            loading="lazy"
-          />
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100 shadow-md group-hover:shadow-2xl transition-shadow duration-300">
+        <Image
+          src={imageSrc}
+          alt={title}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-110"
+        />
+        
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Play Button */}
+        {audioSrc && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="p-4 bg-white rounded-full shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
+              <Play className="w-8 h-8 text-black" fill="currentColor" />
+            </div>
+          </div>
+        )}
+
+        {/* Info Badge */}
+        <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+            <h3 className="font-semibold text-sm text-gray-900 truncate">
+              {title}
+            </h3>
+            <p className="text-xs text-gray-600 truncate">
+              by {coverArtist}
+            </p>
+          </div>
         </div>
-        <div className="space-y-1">
-          <CardTitle id={headingId} className="font-serif text-lg md:text-xl" title={title}>
-            {title}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Originally by {originalArtist} • Cover by {coverArtist}
+      </div>
+
+      {/* Static Info (always visible) */}
+      <div className="mt-4 space-y-1">
+        <h3 className="font-serif text-lg font-semibold text-gray-900 truncate">
+          {title}
+        </h3>
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Cover:</span> {coverArtist}
+        </p>
+        {originalArtist && (
+          <p className="text-xs text-gray-500">
+            <span className="font-medium">Original:</span> {originalArtist}
           </p>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-        <div className="flex items-center gap-2">
-          <Button size="sm" asChild className="transition-transform hover:-translate-y-0.5">
-            <Link href={href} aria-label={`Listen to ${title} by ${coverArtist}`}>
-              Listen
-            </Link>
-          </Button>
-          <Button size="sm" variant="secondary" asChild className="transition-transform hover:-translate-y-0.5">
-            <Link href="/pricing">Get Premium</Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
+        )}
+      </div>
+    </div>
+  );
 }

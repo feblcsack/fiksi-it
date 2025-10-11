@@ -1,5 +1,8 @@
 "use client";
+
 import { useState, ChangeEvent, FormEvent } from "react";
+import { motion } from "framer-motion";
+import { UploadCloud, Music, Image as ImageIcon } from "lucide-react";
 import { db } from "@/lib/firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Image from "next/image";
@@ -26,139 +29,61 @@ export default function UploadCover() {
     imageSrc: "",
     audioSrc: "",
   });
+  const [preview, setPreview] = useState({ image: "", logo: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string>("");
-  const [previewLogo, setPreviewLogo] = useState<string>("");
 
-  // Konversi file ke base64
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
+  const convertToBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
+
+  const validateFile = (file: File, type: string, maxSizeMB: number) => {
+    if (!file.type.startsWith(type)) return `File harus berupa ${type}`;
+    if (file.size > maxSizeMB * 1024 * 1024)
+      return `Ukuran file maksimal ${maxSizeMB}MB`;
+    return null;
   };
 
-  // Handle perubahan input text
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  const handleFileUpload = async (
+    e: ChangeEvent<HTMLInputElement>,
+    key: keyof FormData,
+    previewKey?: "image" | "logo",
+    type = "image/",
+    maxSizeMB = 1
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Handle upload cover image
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Validasi ukuran file (max 1MB untuk performa)
-    if (file.size > 1024 * 1024) {
-      alert("Ukuran file terlalu besar. Maksimal 1MB");
-      return;
-    }
-
-    // Validasi tipe file
-    if (!file.type.startsWith("image/")) {
-      alert("File harus berupa gambar");
-      return;
-    }
+    const error = validateFile(file, type, maxSizeMB);
+    if (error) return alert(error);
 
     try {
       const base64 = await convertToBase64(file);
-      setFormData((prev) => ({
-        ...prev,
-        imageSrc: base64,
-      }));
-      setPreviewImage(base64);
-    } catch (error) {
-      console.error("Error converting image:", error);
-      alert("Gagal memproses gambar");
+      setFormData((prev) => ({ ...prev, [key]: base64 }));
+      if (previewKey) setPreview((prev) => ({ ...prev, [previewKey]: base64 }));
+    } catch {
+      alert("Gagal memproses file");
     }
   };
 
-  // Handle upload logo band
-  const handleLogoUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-    if (file.size > 512 * 1024) {
-      alert("Ukuran logo terlalu besar. Maksimal 512KB");
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      alert("File harus berupa gambar");
-      return;
-    }
-
-    try {
-      const base64 = await convertToBase64(file);
-      setFormData((prev) => ({
-        ...prev,
-        bandLogo: base64,
-      }));
-      setPreviewLogo(base64);
-    } catch (error) {
-      console.error("Error converting logo:", error);
-      alert("Gagal memproses logo");
-    }
-  };
-
-  // Handle upload audio
-  const handleAudioUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validasi ukuran audio (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran audio terlalu besar. Maksimal 5MB");
-      return;
-    }
-
-    if (!file.type.startsWith("audio/")) {
-      alert("File harus berupa audio");
-      return;
-    }
-
-    try {
-      const base64 = await convertToBase64(file);
-      setFormData((prev) => ({
-        ...prev,
-        audioSrc: base64,
-      }));
-    } catch (error) {
-      console.error("Error converting audio:", error);
-      alert("Gagal memproses audio");
-    }
-  };
-
-  // Handle submit form
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const { title, coverArtist, imageSrc } = formData;
+    if (!title || !coverArtist || !imageSrc)
+      return alert("Mohon lengkapi field yang wajib diisi");
+
     setIsLoading(true);
-
-    // Validasi
-    if (!formData.title || !formData.coverArtist || !formData.imageSrc) {
-      alert("Mohon lengkapi field yang wajib diisi");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const coversCollection = collection(db, "covers");
-      await addDoc(coversCollection, {
+      await addDoc(collection(db, "covers"), {
         ...formData,
         createdAt: serverTimestamp(),
       });
-
       alert("Cover berhasil diupload!");
-      
-      // Reset form
       setFormData({
         title: "",
         originalArtist: "",
@@ -169,10 +94,9 @@ export default function UploadCover() {
         imageSrc: "",
         audioSrc: "",
       });
-      setPreviewImage("");
-      setPreviewLogo("");
-    } catch (error) {
-      console.error("Error uploading cover:", error);
+      setPreview({ image: "", logo: "" });
+    } catch (err) {
+      console.error(err);
       alert("Gagal mengupload cover");
     } finally {
       setIsLoading(false);
@@ -180,145 +104,155 @@ export default function UploadCover() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-8 font-serif text-3xl font-semibold">Upload New Cover</h1>
+    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-black flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-2xl rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 shadow-2xl"
+      >
+        <h1 className="mb-2 text-4xl font-bold text-white tracking-tight">
+          Upload <span className="text-indigo-400">Your Cover</span>
+        </h1>
+        <p className="text-gray-400 mb-8 text-sm">
+          Share your latest music or band performance 🎵
+        </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Cover Image */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">
-            Cover Image <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="w-full rounded-md border border-gray-300 p-2"
-          />
-          {previewImage && (
-            <div className="mt-4">
-              <Image
-                src={previewImage}
-                alt="Preview"
-                width={300}
-                height={300}
-                className="rounded-lg object-cover"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Title */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            className="w-full rounded-md border border-gray-300 p-2"
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <FileUpload
+            label="Cover Image"
+            icon={<ImageIcon className="text-indigo-400 w-6 h-6" />}
+            onChange={(e) => handleFileUpload(e, "imageSrc", "image", "image/", 1)}
+            preview={preview.image}
             required
           />
-        </div>
 
-        {/* Original Artist */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">Original Artist</label>
-          <input
-            type="text"
+          <Input
+            label="Title"
+            name="title"
+            required
+            value={formData.title}
+            onChange={handleChange}
+          />
+
+          <Input
+            label="Original Artist"
             name="originalArtist"
             value={formData.originalArtist}
-            onChange={handleInputChange}
-            className="w-full rounded-md border border-gray-300 p-2"
+            onChange={handleChange}
           />
-        </div>
 
-        {/* Cover Artist */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">
-            Cover Artist <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
+          <Input
+            label="Cover Artist"
             name="coverArtist"
-            value={formData.coverArtist}
-            onChange={handleInputChange}
-            className="w-full rounded-md border border-gray-300 p-2"
             required
+            value={formData.coverArtist}
+            onChange={handleChange}
           />
-        </div>
 
-        {/* Band Name */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">Band Name</label>
-          <input
-            type="text"
+          <Input
+            label="Band Name"
             name="bandName"
             value={formData.bandName}
-            onChange={handleInputChange}
-            className="w-full rounded-md border border-gray-300 p-2"
+            onChange={handleChange}
           />
-        </div>
 
-        {/* Band Logo */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">Band Logo</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleLogoUpload}
-            className="w-full rounded-md border border-gray-300 p-2"
+          <FileUpload
+            label="Band Logo"
+            icon={<ImageIcon className="text-purple-400 w-6 h-6" />}
+            onChange={(e) =>
+              handleFileUpload(e, "bandLogo", "logo", "image/", 0.5)
+            }
+            preview={preview.logo}
+            small
           />
-          {previewLogo && (
-            <div className="mt-4">
-              <Image
-                src={previewLogo}
-                alt="Logo Preview"
-                width={150}
-                height={150}
-                className="rounded-lg object-contain"
-              />
-            </div>
-          )}
-        </div>
 
-        {/* Description */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">Description</label>
-          <textarea
+          <TextArea
+            label="Description"
             name="description"
             value={formData.description}
-            onChange={handleInputChange}
-            rows={4}
-            className="w-full rounded-md border border-gray-300 p-2"
+            onChange={handleChange}
           />
-        </div>
 
-        {/* Audio */}
-        <div>
-          <label className="mb-2 block text-sm font-medium">Audio File</label>
-          <input
-            type="file"
-            accept="audio/*"
-            onChange={handleAudioUpload}
-            className="w-full rounded-md border border-gray-300 p-2"
+          <FileUpload
+            label="Audio File"
+            icon={<Music className="text-green-400 w-6 h-6" />}
+            onChange={(e) => handleFileUpload(e, "audioSrc", undefined, "audio/", 5)}
           />
           {formData.audioSrc && (
-            <p className="mt-2 text-sm text-green-600">✓ Audio uploaded</p>
+            <p className="text-sm text-green-500">✓ Audio uploaded</p>
           )}
-        </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-gray-800 disabled:bg-gray-400"
-        >
-          {isLoading ? "Uploading..." : "Upload Cover"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-40"
+          >
+            {isLoading ? "Uploading..." : "Upload Cover"}
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 }
+
+/* --- Reusable Components --- */
+const Input = ({ label, name, value, onChange, required }: any) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-300 mb-2">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <input
+      type="text"
+      name={name}
+      value={value}
+      onChange={onChange}
+      required={required}
+      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition"
+    />
+  </div>
+);
+
+const TextArea = ({ label, name, value, onChange }: any) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-300 mb-2">
+      {label}
+    </label>
+    <textarea
+      name={name}
+      value={value}
+      onChange={onChange}
+      rows={4}
+      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition"
+    />
+  </div>
+);
+
+const FileUpload = ({ label, icon, onChange, preview, small, required }: any) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-300 mb-2">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-white/20 hover:border-indigo-400 transition p-6 rounded-xl cursor-pointer bg-white/5 hover:bg-white/10">
+      {icon}
+      <p className="text-gray-400 text-sm mt-2">Click or drag file to upload</p>
+      <input type="file" onChange={onChange} className="hidden" />
+    </label>
+
+    {preview && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mt-4"
+      >
+        <Image
+          src={preview}
+          alt="Preview"
+          width={small ? 150 : 300}
+          height={small ? 150 : 300}
+          className="rounded-lg object-cover border border-white/10"
+        />
+      </motion.div>
+    )}
+  </div>
+);
