@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
-      'lh3.googleusercontent.com', // domain avatar Google
+      'lh3.googleusercontent.com',
+      'cdn-icons-png.flaticon.com', // domain avatar Google
       // tambahin domain lain kalau perlu
     ],
   },
