@@ -126,3 +126,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ===== Custom Dark Minimal Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px; /* Lebar scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a; /* warna dasar scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #27272a; /* warna batang scrollbar */
+  border-radius: 9999px; /* biar rounded */
+  border: 2px solid #0a0a0a; /* kasih border biar nyatu sama background */
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #3f3f46; /* warna pas hover */
+}
+
+/* Scrollbar untuk Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #27272a #0a0a0a;
+}
+

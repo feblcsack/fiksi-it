@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { Navbar } from "@/components/organisms/Navbar";
 
 interface FormData {
   title: string;
@@ -116,12 +117,12 @@ export default function UploadCover() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-6">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-6 items-start">
+      <Navbar/>
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-6 items-start mt-20">
         {/* Left Side - Info Panel */}
         <div className="hidden lg:flex flex-col justify-center space-y-8 px-8">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-full">
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="inline-flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-full">
               <span className="text-sm text-zinc-300">Share Your Music</span>
             </div>
             
