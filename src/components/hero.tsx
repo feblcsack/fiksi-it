@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function Hero() {
+interface HeroProps {
+  onSwitchView: (mode: "featured" | "recommended") => void;
+}
+
+export function Hero({ onSwitchView }: HeroProps) {
   return (
     <section className="relative py-16 md:py-24" aria-labelledby="hero-title">
       <div className="container mx-auto px-4">
@@ -25,15 +29,16 @@ export function Hero() {
             <Button
               asChild
               className="min-w-40 transition-transform hover:-translate-y-0.5"
+              onClick={() => onSwitchView("featured")}
             >
               <Link href="#featured">Start Listening</Link>
             </Button>
             <Button
               variant="secondary"
-              asChild
               className="min-w-40 transition-transform hover:-translate-y-0.5"
+              onClick={() => onSwitchView("recommended")}
             >
-              <Link href="/pricing">Browse Plans</Link>
+              Recommended
             </Button>
           </div>
         </div>
