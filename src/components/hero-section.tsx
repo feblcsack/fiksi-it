@@ -37,7 +37,7 @@ export function HeroSection() {
       ref={ref}
     >
       <div className="relative w-full min-h-[80vh] md:w-[85vw] md:h-[75vh] md:max-w-5xl md:rounded-2xl md:border md:border-border overflow-hidden flex items-center justify-center">
-        {/* <HeatmapShaderBackground /> */}
+        <HeatmapShaderBackground />
 
         <motion.div
           initial={{ opacity: 0 }}
