@@ -7,14 +7,59 @@ import { doc, getDoc } from "firebase/firestore";
 import { NavLinks } from "../molecules/NavLinks";
 import { UserProfile } from "../molecules/UserProfiles";
 import Link from "next/link";
-import { Menu, X, LogOut, Sparkles } from "lucide-react";
+import { Menu, X, LogOut, Sparkles, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { mainNavigation, isDropdown } from "@/lib/navigation/config";
 
 interface UserData {
   username?: string;
   displayName?: string;
   photoURL?: string | null;
   email?: string | null;
+}
+
+function MobileDropdown({ item, setMenuOpen }: any) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full justify-between items-center px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
+      >
+        <span>{item.label}</span>
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ChevronDown size={16} />
+        </motion.div>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="ml-4 mt-1 space-y-1 border-l border-white/10 pl-3"
+          >
+            {item.items.map((subItem: any) => (
+              <Link
+                key={subItem.href}
+                href={subItem.href}
+                className="block px-3 py-2 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all"
+                onClick={() => setMenuOpen(false)}
+              >
+                {subItem.label}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export function Navbar() {
@@ -183,88 +228,92 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu */}
-          <AnimatePresence>
-            {menuOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="md:hidden overflow-hidden border-t border-white/10"
+          {/* Mobile Menu */}
+<AnimatePresence>
+  {menuOpen && (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="md:hidden overflow-hidden border-t border-white/10"
+    >
+      <nav className="px-4 py-4 space-y-2">
+        {mainNavigation.map((item, index) => (
+          <motion.div
+            key={item.label}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            {/* Cek apakah item dropdown atau single link */}
+            {"items" in item ? (
+              <MobileDropdown item={item} setMenuOpen={setMenuOpen} />
+            ) : (
+              <Link
+                href={item.href}
+                className="block px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                onClick={() => setMenuOpen(false)}
               >
-                <nav className="px-4 py-4 space-y-1">
-                  {[
-                    { href: "/dashboard/homeMuc", label: "Home" },
-                    { href: "/dashboard/musisi", label: "Gigs" },
-                    { href: "/pricing", label: "Pricing" },
-                  ].map((link, index) => (
-                    <motion.div
-                      key={link.href}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <Link
-                        href={link.href}
-                        className="block px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        {link.label}
-                      </Link>
-                    </motion.div>
-                  ))}
-
-                  {userData ? (
-                    <>
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.15 }}
-                      >
-                        <Link
-                          href="/profile"
-                          className="block px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                          onClick={() => setMenuOpen(false)}
-                        >
-                          Profile
-                        </Link>
-                      </motion.div>
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        <button
-                          onClick={() => {
-                            setMenuOpen(false);
-                            handleLogout();
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-red-500/10 transition-all"
-                        >
-                          <LogOut size={18} />
-                          Logout
-                        </button>
-                      </motion.div>
-                    </>
-                  ) : (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.15 }}
-                    >
-                      <Link
-                        href="/login"
-                        className="block px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-center font-medium transition-colors"
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        Login
-                      </Link>
-                    </motion.div>
-                  )}
-                </nav>
-              </motion.div>
+                {item.label}
+              </Link>
             )}
-          </AnimatePresence>
+          </motion.div>
+        ))}
+
+        {/* User Links */}
+        {userData ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <Link
+                href="/profile"
+                className="block px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                onClick={() => setMenuOpen(false)}
+              >
+                Profile
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-red-500/10 transition-all"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </motion.div>
+          </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <Link
+              href="/login"
+              className="block px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-center font-medium transition-colors"
+              onClick={() => setMenuOpen(false)}
+            >
+              Login
+            </Link>
+          </motion.div>
+        )}
+      </nav>
+    </motion.div>
+  )}
+</AnimatePresence>
+
         </nav>
       </motion.div>
     </header>

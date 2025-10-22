@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MusicianHero } from "@/components/musician-hero";
 import { MusicianUploadCard } from "@/components/musician-upload-card";
 import { Navbar } from "@/components/organisms/Navbar";
+import PulsingCircle from "@/components/pulsing-circle";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -71,6 +72,9 @@ export default function MusiciansPage() {
   return (
     <main className="bg-background text-foreground">
       <Navbar />
+      <div className="fixed bottom-6 right-6 z-50">
+        <PulsingCircle />
+      </div>
       <MusicianHero />
 
       <section

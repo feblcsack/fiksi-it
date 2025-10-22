@@ -6,8 +6,15 @@ import { CoverCard } from "@/components/cover-card";
 import { Navbar } from "@/components/organisms/Navbar";
 import CoverPlayerModal from "@/components/cover-player-modal";
 import { db } from "@/lib/firebase/config";
-import { collection, onSnapshot, orderBy, query, limit } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  limit,
+} from "firebase/firestore";
 import { Footer } from "@/components/footer";
+import PulsingCircle from "@/components/pulsing-circle";
 
 interface Cover {
   id: string;
@@ -34,7 +41,9 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCover, setSelectedCover] = useState<Cover | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"featured" | "recommended">("featured");
+  const [viewMode, setViewMode] = useState<"featured" | "recommended">(
+    "featured"
+  );
 
   const recommendedList: Recommended[] = [
     {
@@ -102,6 +111,9 @@ export default function Page() {
   return (
     <main>
       <Navbar />
+      <div className="fixed bottom-6 right-6 z-50">
+        <PulsingCircle />
+      </div>
       <div className="pt-16 md:pt-16">
         <Hero onSwitchView={handleSwitchView} />
       </div>
@@ -117,7 +129,9 @@ export default function Page() {
               id="featured-heading"
               className="font-serif text-2xl font-semibold md:text-3xl"
             >
-              {viewMode === "featured" ? "Featured Covers" : "Recommended For You"}
+              {viewMode === "featured"
+                ? "Featured Covers"
+                : "Recommended For You"}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               {viewMode === "featured"
@@ -146,17 +160,25 @@ export default function Page() {
                   />
                   <div>
                     <h3 className="font-medium">{rec.title}</h3>
-                    <p className="text-sm text-muted-foreground">{rec.artist}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {rec.artist}
+                    </p>
                   </div>
                 </div>
-                <span className="text-sm text-muted-foreground">{rec.duration}</span>
+                <span className="text-sm text-muted-foreground">
+                  {rec.duration}
+                </span>
               </div>
             ))}
           </div>
         ) : featured.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">No covers uploaded yet.</p>
-            <p className="text-sm text-gray-500 mt-2">Be the first to share your music!</p>
+            <p className="text-muted-foreground text-lg">
+              No covers uploaded yet.
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Be the first to share your music!
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

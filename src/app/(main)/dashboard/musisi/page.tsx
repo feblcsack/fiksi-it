@@ -15,6 +15,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { Dialog } from "@headlessui/react";
 import { Navbar } from "../../../../components/organisms/Navbar";
 import { Footer } from "@/components/footer";
+import PulsingCircle from "@/components/pulsing-circle";
 
 interface Gig {
   id: string;
@@ -55,6 +56,9 @@ export default function MusicianLandingPage() {
     <>
       <div className="fixed top-0 w-full z-20">
         <Navbar />
+      </div>
+      <div className="fixed bottom-6 right-6 z-50">
+        <PulsingCircle />
       </div>
 
       <div className="min-h-screen bg-black text-white relative pt-16 md:pt-16">

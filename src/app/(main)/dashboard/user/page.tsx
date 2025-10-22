@@ -1,3 +1,4 @@
+import PulsingCircle from "@/components/pulsing-circle";
 import { Navbar } from "../../../../components/organisms/Navbar";
 import { NearbyGigsList } from "@/components/features/NearbyGigsList";
 
@@ -7,6 +8,9 @@ export default function UserDashboardPage() {
       <div className="fixed top-0 w-full z-20">
         {" "}
         <Navbar />
+      </div>
+      <div className="fixed bottom-6 right-6 z-50">
+        <PulsingCircle />
       </div>
 
       <div className="pt-16 md:pt-16">
