@@ -1,17 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Music, MapPin, Shuffle } from "lucide-react";
-import { HeroSection } from "@/components/hero-section";
-import { FeatureSection } from "@/components/feature-section";
-import { ChatPill } from "@/components/chat-pill";
-import { DynamicBackground } from "@/components/dynamic-background";
-import { Footer } from "@/components/footer";
-import { Client3DScene } from "@/components/client-3d-scene";
-import { Navbar } from "@/components/organisms/Navbar";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-// Reusable Skeleton Components
+// Dynamic imports dengan wrapper untuk named exports
+const HeroSection = lazy(() => 
+  import("@/components/hero-section").then(module => ({ default: module.HeroSection }))
+);
+const FeatureSection = lazy(() => 
+  import("@/components/feature-section").then(module => ({ default: module.FeatureSection }))
+);
+const Footer = lazy(() => 
+  import("@/components/footer").then(module => ({ default: module.Footer }))
+);
+const ChatPill = lazy(() => 
+  import("@/components/chat-pill").then(module => ({ default: module.ChatPill }))
+);
+const DynamicBackground = lazy(() => 
+  import("@/components/dynamic-background").then(module => ({ default: module.DynamicBackground }))
+);
+const Navbar = lazy(() => 
+  import("@/components/organisms/Navbar").then(module => ({ default: module.Navbar }))
+);
+
+// Reusable Skeleton Components (optimized)
 function SkeletonBox({ className = "" }: { className?: string }) {
   return (
     <div className={`bg-slate-600 animate-pulse rounded ${className}`} />
@@ -22,7 +35,7 @@ function SkeletonText({ width = "w-full" }: { width?: string }) {
   return <div className={`h-4 ${width} bg-slate-600 animate-pulse rounded`} />;
 }
 
-// Loading States
+// Loading States (simplified animations)
 const LoadingNavbar = () => (
   <div className="bg-slate/80 backdrop-blur-sm border-b border-slate-600/50">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,11 +54,7 @@ const LoadingNavbar = () => (
 );
 
 const LoadingHero = () => (
-  <motion.section
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className="relative px-4 py-20 md:py-32"
-  >
+  <section className="relative px-4 py-20 md:py-32">
     <div className="container mx-auto max-w-5xl text-center">
       <div className="space-y-4 mb-8">
         <SkeletonBox className="h-12 md:h-16 w-3/4 mx-auto rounded-lg" />
@@ -60,19 +69,14 @@ const LoadingHero = () => (
         <SkeletonBox className="h-12 w-32 rounded-full" />
       </div>
     </div>
-  </motion.section>
+  </section>
 );
 
 const LoadingFeature = ({ index }: { index: number }) => {
   const isEven = index % 2 === 0;
   
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="relative px-4 py-16 md:py-24"
-    >
+    <section className="relative px-4 py-16 md:py-24">
       <div className="container mx-auto max-w-6xl">
         <div className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-12 md:gap-16`}>
           <div className="flex-shrink-0">
@@ -91,7 +95,7 @@ const LoadingFeature = ({ index }: { index: number }) => {
           </div>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
@@ -117,169 +121,172 @@ const LoadingFooter = () => (
   </footer>
 );
 
-// Loading stages
-type LoadingStage = 'navbar' | 'hero' | 'features' | 'footer' | 'complete';
-
-export default function WAV0Landing() {
-  const [showLogoLoader, setShowLogoLoader] = useState(true);
-  const [loadingStage, setLoadingStage] = useState<LoadingStage>('navbar');
-  const [showContent, setShowContent] = useState(false);
+// Optimized Logo Loader
+const LogoLoader = ({ onFinish }: { onFinish: () => void }) => {
+  const [startReveal, setStartReveal] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (!showLogoLoader) {
-      const stages: { stage: LoadingStage; delay: number }[] = [
-        { stage: 'navbar', delay: 0 },
-        { stage: 'hero', delay: 300 },
-        { stage: 'features', delay: 600 },
-        { stage: 'footer', delay: 900 },
-        { stage: 'complete', delay: 1200 },
-      ];
+    const timer = setTimeout(() => {
+      setStartReveal(true);
+    }, prefersReducedMotion ? 500 : 1000);
+    
+    const finishTimer = setTimeout(() => {
+      onFinish();
+    }, prefersReducedMotion ? 800 : 2200);
+    
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(finishTimer);
+    };
+  }, [onFinish, prefersReducedMotion]);
 
-      const timers = stages.map(({ stage, delay }) =>
-        setTimeout(() => setLoadingStage(stage), delay)
-      );
-
-      const contentTimer = setTimeout(() => setShowContent(true), 1300);
-
-      return () => {
-        timers.forEach(clearTimeout);
-        clearTimeout(contentTimer);
-      };
-    }
-  }, [showLogoLoader]);
-
-
-  const isStageLoaded = (stage: LoadingStage) => {
-    const stageOrder: LoadingStage[] = ['navbar', 'hero', 'features', 'footer', 'complete'];
-    const currentIndex = stageOrder.indexOf(loadingStage);
-    const targetIndex = stageOrder.indexOf(stage);
-    return currentIndex >= targetIndex;
-  };
-
-  const LogoLoader = ({ onFinish }: { onFinish: () => void }) => {
-    const [startReveal, setStartReveal] = useState(false);
-
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setStartReveal(true);
-      }, 1000); // durasi sebelum reveal dimulai
-      
-      const finishTimer = setTimeout(() => {
-        onFinish();
-      }, 2200); // 2000ms + 1200ms animasi reveal
-      
-      return () => {
-        clearTimeout(timer);
-        clearTimeout(finishTimer);
-      };
-    }, [onFinish]);
-  
+  if (prefersReducedMotion) {
     return (
+      <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+        <img
+          src="/musionic.png"
+          alt="Logo"
+          className="w-32 h-32 object-contain"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9999] bg-black overflow-hidden"
+      initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+      animate={startReveal ? {
+        clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)"
+      } : {}}
+      transition={{ 
+        duration: 1.2, 
+        ease: [0.76, 0, 0.24, 1]
+      }}
+    >
       <motion.div
-        className="fixed inset-0 z-[9999] bg-black overflow-hidden"
-        initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+        className="absolute inset-0 flex items-center justify-center"
         animate={startReveal ? {
-          clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)"
+          x: "100vw",
+          y: "100vh",
+          scale: 0.5,
+          opacity: 0
         } : {}}
         transition={{ 
           duration: 1.2, 
-          ease: [0.76, 0, 0.24, 1] // cubic-bezier untuk smooth easing
+          ease: [0.76, 0, 0.24, 1]
         }}
       >
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={startReveal ? {
-            x: "100vw",
-            y: "100vh",
-            scale: 0.5,
-            opacity: 0
+        <motion.img
+          src="/musionic.png"
+          alt="Logo"
+          className="w-32 h-32 object-contain"
+          animate={!startReveal ? {
+            rotate: [0, 360],
+            scale: [1, 1.1, 1],
+            opacity: [0.8, 1, 0.8],
           } : {}}
-          transition={{ 
-            duration: 1.2, 
-            ease: [0.76, 0, 0.24, 1]
+          transition={{
+            duration: 1,
+            ease: "easeInOut",
+            repeat: startReveal ? 0 : Infinity,
           }}
-        >
-          <motion.img
-            src="/musionic.png"
-            alt="Logo"
-            className="w-32 h-32 object-contain"
-            animate={!startReveal ? {
-              rotate: [0, 360],
-              scale: [1, 1.1, 1],
-              opacity: [0.8, 1, 0.8],
-            } : {}}
-            transition={{
-              duration: 1,
-              ease: "easeInOut",
-              repeat: startReveal ? 0 : Infinity,
-            }}
-          />
-        </motion.div>
+        />
       </motion.div>
-    );
+    </motion.div>
+  );
+};
+
+export default function WAV0Landing() {
+  const [showLogoLoader, setShowLogoLoader] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+  const [showBackground, setShowBackground] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Check sessionStorage untuk skip loader di visit berikutnya
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem("visited");
+    if (hasVisited) {
+      setShowLogoLoader(false);
+      setShowContent(true);
+      // Delay background render
+      setTimeout(() => setShowBackground(true), 100);
+    } else {
+      sessionStorage.setItem("visited", "true");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!showLogoLoader && !sessionStorage.getItem("visited-loaded")) {
+      const contentTimer = setTimeout(() => {
+        setShowContent(true);
+      }, prefersReducedMotion ? 300 : 1000);
+
+      const backgroundTimer = setTimeout(() => {
+        setShowBackground(true);
+      }, prefersReducedMotion ? 500 : 1500);
+
+      return () => {
+        clearTimeout(contentTimer);
+        clearTimeout(backgroundTimer);
+      };
+    }
+  }, [showLogoLoader, prefersReducedMotion]);
+
+  const handleLogoFinish = () => {
+    setShowLogoLoader(false);
+    sessionStorage.setItem("visited-loaded", "true");
   };
-  
 
   return (
     <>
       <AnimatePresence mode="wait">
         {showLogoLoader ? (
-          <LogoLoader onFinish={() => setShowLogoLoader(false)} />
+          <LogoLoader onFinish={handleLogoFinish} />
         ) : (
           <>
             {/* Navbar */}
             <div className="fixed top-0 w-full z-20">
-              <AnimatePresence mode="wait">
-                {!showContent ? (
+              <Suspense fallback={<LoadingNavbar />}>
+                {showContent ? (
                   <motion.div
-                    key="loading-navbar"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <LoadingNavbar />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="navbar"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
                   >
                     <Navbar />
                   </motion.div>
+                ) : (
+                  <LoadingNavbar />
                 )}
-              </AnimatePresence>
+              </Suspense>
             </div>
   
-            {/* Konten */}
+            {/* Content */}
             <div className="min-h-screen bg-background relative pt-16 md:pt-16">
-              <DynamicBackground />
+              {showBackground && (
+                <Suspense fallback={null}>
+                  <DynamicBackground />
+                </Suspense>
+              )}
               <div className="relative z-10">
-                <AnimatePresence mode="wait">
-                  {!showContent ? (
+                {!showContent ? (
+                  <div>
+                    <LoadingHero />
+                    <main>
+                      {[0, 1, 2].map((index) => (
+                        <LoadingFeature key={index} index={index} />
+                      ))}
+                    </main>
+                    <LoadingFooter />
+                  </div>
+                ) : (
+                  <Suspense fallback={<LoadingHero />}>
                     <motion.div
-                      key="loading-content"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      {isStageLoaded('hero') && <LoadingHero />}
-                      {isStageLoaded('features') && (
-                        <main>
-                          {[0, 1, 2].map((index) => (
-                            <LoadingFeature key={index} index={index} />
-                          ))}
-                        </main>
-                      )}
-                      {isStageLoaded('footer') && <LoadingFooter />}
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="actual-content"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.4 }}
+                      transition={{ duration: prefersReducedMotion ? 0 : 0.4 }}
                     >
                       <HeroSection />
                       <main>
@@ -287,7 +294,7 @@ export default function WAV0Landing() {
                           title="Upload Music Covers"
                           description="Local artists can easily upload covers of their favorite songs. Search tracks, submit your cover, and compare it with the original version in an interactive player."
                           icon={<Music size={40} />}
-                          delay={0.2}
+                          delay={prefersReducedMotion ? 0 : 0.2}
                           index={0}
                           metric="Unlimited"
                           metricLabel="Uploads"
@@ -296,7 +303,7 @@ export default function WAV0Landing() {
                           title="Discover Live Gigs"
                           description="Find live gigs and music sessions near you. Filter by location and favorite genres so you never miss a local performance."
                           icon={<MapPin size={40} />}
-                          delay={0.3}
+                          delay={prefersReducedMotion ? 0 : 0.3}
                           index={1}
                           metric="Nearby"
                           metricLabel="Sessions"
@@ -305,7 +312,7 @@ export default function WAV0Landing() {
                           title="Compare Covers"
                           description="Easily compare your uploaded covers with the original tracks. Get insights and feedback from the music community to improve your skills."
                           icon={<Shuffle size={40} />}
-                          delay={0.4}
+                          delay={prefersReducedMotion ? 0 : 0.4}
                           index={2}
                           metric="Interactive"
                           metricLabel="Player"
@@ -314,8 +321,8 @@ export default function WAV0Landing() {
                       <Footer />
                       <ChatPill />
                     </motion.div>
-                  )}
-                </AnimatePresence>
+                  </Suspense>
+                )}
               </div>
             </div>
           </>
@@ -323,5 +330,4 @@ export default function WAV0Landing() {
       </AnimatePresence>
     </>
   );
-  
 }

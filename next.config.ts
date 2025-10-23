@@ -2,20 +2,29 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+
   images: {
     domains: [
-      'lh3.googleusercontent.com',
-      'cdn-icons-png.flaticon.com', // domain avatar Google
-      // tambahin domain lain kalau perlu
+      "lh3.googleusercontent.com",
+      "cdn-icons-png.flaticon.com",
     ],
+    formats: ["image/webp", "image/avif"], // ✅ optimasi format gambar
   },
+
+  experimental: {
+    optimizePackageImports: ["framer-motion", "lucide-react"], // ✅ reduce bundle size
+  },
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production", // ✅ hapus console.log di production
+  },
+
   eslint: {
-    // ⚠️ Biar Vercel gak gagal gara-gara ESLint
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // ⚠️ biar build gak gagal di Vercel
   },
+
   typescript: {
-    // ⚠️ Biar build gak gagal gara-gara error TypeScript
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // ⚠️ build tetap jalan meski ada TS error minor
   },
 };
 

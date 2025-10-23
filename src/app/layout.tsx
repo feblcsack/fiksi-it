@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import type React from "react";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -37,15 +36,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <head>
+        {/* ✅ Preconnect dan Preload untuk performa font dan logo */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preload" as="image" href="/musionic.png" />
+
+        {/* ✅ Meta viewport */}
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
         />
       </head>
+
       <body
         className={`m-0 p-0 h-full w-full antialiased font-sans ${inter.variable} ${playfair.variable}`}
       >
-        {/* ✅ Suspense untuk NProgress */}
         <Suspense fallback={null}>
           <RouteProgress />
         </Suspense>
