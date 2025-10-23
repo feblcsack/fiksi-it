@@ -11,6 +11,39 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { Music, User as UserIcon } from "lucide-react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import emailjs from '@emailjs/browser';
+
+// ✅ Send welcome email function - LANGSUNG dari client
+const sendWelcomeEmail = async (email: string, username: string, role: "user" | "musisi") => {
+  try {
+    const templateParams = {
+      user_email: email,
+      to_email: email,
+      to_name: username,
+      username: username,
+      user_role: role === 'musisi' ? 'Musician' : 'User',
+    };
+
+    // Pilih template sesuai role (opsional - kalo mau beda template)
+    // const templateId = role === 'musisi' 
+    //   ? process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_MUSICIAN!
+    //   : process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_USER!;
+
+    const response = await emailjs.send(
+      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!, // atau pake templateId kalo mau beda
+      templateParams,
+      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+    );
+
+    if (response.status === 200) {
+      console.log('✅ Welcome email sent successfully!');
+    }
+  } catch (error) {
+    console.error('❌ Email notification failed:', error);
+    // Silent fail - don't block user registration
+  }
+};
 
 type AuthMode = "login" | "register";
 type UserRole = "user" | "musisi";
@@ -56,12 +89,19 @@ export default function AuthPage() {
           createdAt: new Date().toISOString(),
         });
 
+        // 🔥 Send welcome email untuk REGISTER
+        await sendWelcomeEmail(
+          user.email || email,
+          username.trim(),
+          role
+        );
+
         // Redirect sesuai role
         router.push(
           role === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc",
         );
       } else {
-        // Login - cek role dari Firestore
+        // Login - cek role dari Firestore (TANPA email)
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
@@ -75,8 +115,8 @@ export default function AuthPage() {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           const userRole = userData.role || "user";
-
-          // Redirect sesuai role yang tersimpan
+        
+          // Redirect sesuai role yang tersimpan (NO EMAIL on login)
           router.push(
             userRole === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc",
           );
@@ -120,7 +160,7 @@ export default function AuthPage() {
 
       if (!userDoc.exists()) {
         // User belum register - TOLAK login
-        await auth.signOut(); // Sign out user yang baru login
+        await auth.signOut();
         setError(
           "Account not found. Please register first before using Google login.",
         );
@@ -128,7 +168,7 @@ export default function AuthPage() {
         return;
       }
 
-      // Kalo udah ada, ambil role dan redirect
+      // Kalo udah ada, ambil role dan redirect (NO EMAIL on login)
       const userData = userDoc.data();
       const userRole = userData.role || "user";
 
@@ -184,6 +224,13 @@ export default function AuthPage() {
         role: role,
         createdAt: new Date().toISOString(),
       });
+
+      // 🔥 Send welcome email untuk GOOGLE REGISTER
+      await sendWelcomeEmail(
+        user.email || email,
+        username.trim(),
+        role
+      );
 
       // Redirect sesuai role
       router.push(role === "musisi" ? "/dashboard/homeMuc" : "/dashboard/homeMuc");

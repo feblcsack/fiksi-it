@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@geist-ui/react": "^2.2.5",
     "@headlessui/react": "^2.2.9",
     "@hookform/resolvers": "^5.2.2",
@@ -21,6 +22,7 @@
     "@vercel/analytics": "^1.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "emailjs-com": "^3.2.0",
     "firebase": "^12.3.0",
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.23.22",
@@ -36,6 +38,7 @@
     "react-error-boundary": "^6.0.0",
     "react-hook-form": "^7.65.0",
     "react-router-dom": "^7.9.3",
+    "resend": "^6.2.2",
     "tailwind-merge": "^3.3.1",
     "three": "^0.180.0",
     "zod": "^4.1.12"

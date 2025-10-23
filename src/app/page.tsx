@@ -121,31 +121,33 @@ const LoadingFooter = () => (
 type LoadingStage = 'navbar' | 'hero' | 'features' | 'footer' | 'complete';
 
 export default function WAV0Landing() {
+  const [showLogoLoader, setShowLogoLoader] = useState(true);
   const [loadingStage, setLoadingStage] = useState<LoadingStage>('navbar');
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Progressive loading stages
-    const stages: { stage: LoadingStage; delay: number }[] = [
-      { stage: 'navbar', delay: 0 },
-      { stage: 'hero', delay: 300 },
-      { stage: 'features', delay: 600 },
-      { stage: 'footer', delay: 900 },
-      { stage: 'complete', delay: 1200 },
-    ];
+    if (!showLogoLoader) {
+      const stages: { stage: LoadingStage; delay: number }[] = [
+        { stage: 'navbar', delay: 0 },
+        { stage: 'hero', delay: 300 },
+        { stage: 'features', delay: 600 },
+        { stage: 'footer', delay: 900 },
+        { stage: 'complete', delay: 1200 },
+      ];
 
-    const timers = stages.map(({ stage, delay }) =>
-      setTimeout(() => setLoadingStage(stage), delay)
-    );
+      const timers = stages.map(({ stage, delay }) =>
+        setTimeout(() => setLoadingStage(stage), delay)
+      );
 
-    // Show content after all loading stages
-    const contentTimer = setTimeout(() => setShowContent(true), 1300);
+      const contentTimer = setTimeout(() => setShowContent(true), 1300);
 
-    return () => {
-      timers.forEach(clearTimeout);
-      clearTimeout(contentTimer);
-    };
-  }, []);
+      return () => {
+        timers.forEach(clearTimeout);
+        clearTimeout(contentTimer);
+      };
+    }
+  }, [showLogoLoader]);
+
 
   const isStageLoaded = (stage: LoadingStage) => {
     const stageOrder: LoadingStage[] = ['navbar', 'hero', 'features', 'footer', 'complete'];
@@ -154,114 +156,172 @@ export default function WAV0Landing() {
     return currentIndex >= targetIndex;
   };
 
+  const LogoLoader = ({ onFinish }: { onFinish: () => void }) => {
+    const [startReveal, setStartReveal] = useState(false);
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setStartReveal(true);
+      }, 1000); // durasi sebelum reveal dimulai
+      
+      const finishTimer = setTimeout(() => {
+        onFinish();
+      }, 2200); // 2000ms + 1200ms animasi reveal
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(finishTimer);
+      };
+    }, [onFinish]);
+  
+    return (
+      <motion.div
+        className="fixed inset-0 z-[9999] bg-black overflow-hidden"
+        initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+        animate={startReveal ? {
+          clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)"
+        } : {}}
+        transition={{ 
+          duration: 1.2, 
+          ease: [0.76, 0, 0.24, 1] // cubic-bezier untuk smooth easing
+        }}
+      >
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          animate={startReveal ? {
+            x: "100vw",
+            y: "100vh",
+            scale: 0.5,
+            opacity: 0
+          } : {}}
+          transition={{ 
+            duration: 1.2, 
+            ease: [0.76, 0, 0.24, 1]
+          }}
+        >
+          <motion.img
+            src="/musionic.jpg"
+            alt="Logo"
+            className="w-32 h-32 object-contain"
+            animate={!startReveal ? {
+              rotate: [0, 360],
+              scale: [1, 1.1, 1],
+              opacity: [0.8, 1, 0.8],
+            } : {}}
+            transition={{
+              duration: 1,
+              ease: "easeInOut",
+              repeat: startReveal ? 0 : Infinity,
+            }}
+          />
+        </motion.div>
+      </motion.div>
+    );
+  };
+  
+
   return (
     <>
-      {/* Navbar */}
-      <div className="fixed top-0 w-full z-20">
-        <AnimatePresence mode="wait">
-          {!showContent ? (
-            <motion.div
-              key="loading-navbar"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <LoadingNavbar />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="navbar"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Navbar />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      <div className="min-h-screen bg-background relative pt-16 md:pt-16">
-        {/* Optional backgrounds */}
-        <div className="">
-          <DynamicBackground />
-        </div>
-
-        <div className="relative z-10">
-          <AnimatePresence mode="wait">
-            {!showContent ? (
-              <motion.div
-                key="loading-content"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {/* Loading Hero */}
-                {isStageLoaded('hero') && <LoadingHero />}
-
-                {/* Loading Features */}
-                {isStageLoaded('features') && (
-                  <main>
-                    {[0, 1, 2].map((index) => (
-                      <LoadingFeature key={index} index={index} />
-                    ))}
-                  </main>
+      <AnimatePresence mode="wait">
+        {showLogoLoader ? (
+          <LogoLoader onFinish={() => setShowLogoLoader(false)} />
+        ) : (
+          <>
+            {/* Navbar */}
+            <div className="fixed top-0 w-full z-20">
+              <AnimatePresence mode="wait">
+                {!showContent ? (
+                  <motion.div
+                    key="loading-navbar"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <LoadingNavbar />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="navbar"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Navbar />
+                  </motion.div>
                 )}
-
-                {/* Loading Footer */}
-                {isStageLoaded('footer') && <LoadingFooter />}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="actual-content"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-              >
-                {/* Actual Hero */}
-                <HeroSection />
-
-                {/* Actual Features */}
-                <main>
-  <FeatureSection
-    title="Upload Music Covers"
-    description="Local artists can easily upload covers of their favorite songs. Search tracks, submit your cover, and compare it with the original version in an interactive player."
-    icon={<Music size={40} />}
-    delay={0.2}
-    index={0}
-    metric="Unlimited"
-    metricLabel="Uploads"
-  />
-  <FeatureSection
-    title="Discover Live Gigs"
-    description="Find live gigs and music sessions near you. Filter by location and favorite genres so you never miss a local performance."
-    icon={<MapPin size={40} />}
-    delay={0.3}
-    index={1}
-    metric="Nearby"
-    metricLabel="Sessions"
-  />
-  <FeatureSection
-    title="Compare Covers"
-    description="Easily compare your uploaded covers with the original tracks. Get insights and feedback from the music community to improve your skills."
-    icon={<Shuffle size={40} />}
-    delay={0.4}
-    index={2}
-    metric="Interactive"
-    metricLabel="Player"
-  />
-</main>
-
-                {/* Actual Footer */}
-                <Footer />
-
-                {/* Chat Pill */}
-                <ChatPill />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+              </AnimatePresence>
+            </div>
+  
+            {/* Konten */}
+            <div className="min-h-screen bg-background relative pt-16 md:pt-16">
+              <DynamicBackground />
+              <div className="relative z-10">
+                <AnimatePresence mode="wait">
+                  {!showContent ? (
+                    <motion.div
+                      key="loading-content"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {isStageLoaded('hero') && <LoadingHero />}
+                      {isStageLoaded('features') && (
+                        <main>
+                          {[0, 1, 2].map((index) => (
+                            <LoadingFeature key={index} index={index} />
+                          ))}
+                        </main>
+                      )}
+                      {isStageLoaded('footer') && <LoadingFooter />}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="actual-content"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <HeroSection />
+                      <main>
+                        <FeatureSection
+                          title="Upload Music Covers"
+                          description="Local artists can easily upload covers of their favorite songs. Search tracks, submit your cover, and compare it with the original version in an interactive player."
+                          icon={<Music size={40} />}
+                          delay={0.2}
+                          index={0}
+                          metric="Unlimited"
+                          metricLabel="Uploads"
+                        />
+                        <FeatureSection
+                          title="Discover Live Gigs"
+                          description="Find live gigs and music sessions near you. Filter by location and favorite genres so you never miss a local performance."
+                          icon={<MapPin size={40} />}
+                          delay={0.3}
+                          index={1}
+                          metric="Nearby"
+                          metricLabel="Sessions"
+                        />
+                        <FeatureSection
+                          title="Compare Covers"
+                          description="Easily compare your uploaded covers with the original tracks. Get insights and feedback from the music community to improve your skills."
+                          icon={<Shuffle size={40} />}
+                          delay={0.4}
+                          index={2}
+                          metric="Interactive"
+                          metricLabel="Player"
+                        />
+                      </main>
+                      <Footer />
+                      <ChatPill />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
+  
 }
