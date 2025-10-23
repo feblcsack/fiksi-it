@@ -200,7 +200,7 @@ export default function WAV0Landing() {
           }}
         >
           <motion.img
-            src="/musionic.jpg"
+            src="/musionic.png"
             alt="Logo"
             className="w-32 h-32 object-contain"
             animate={!startReveal ? {
