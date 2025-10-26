@@ -20,9 +20,7 @@ const ChatPill = lazy(() =>
 const DynamicBackground = lazy(() => 
   import("@/components/dynamic-background").then(module => ({ default: module.DynamicBackground }))
 );
-const Navbar = lazy(() => 
-  import("@/components/organisms/Navbar").then(module => ({ default: module.Navbar }))
-);
+import { Navbar } from "@/components/organisms/Navbar";
 
 // Ultra-minimal skeleton
 function SkeletonBox({ className = "" }: { className?: string }) {

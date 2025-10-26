@@ -30,13 +30,13 @@ export default function PulsingCircle() {
         className="bg-transparent backdrop-blur-xl text-gray-100 shadow-lg rounded-2xl p-4 w-64 border border-white/20"
       >
         <p className="text-sm font-medium mb-3 leading-relaxed">
-          Hey! 👋 Mau ngobrol bareng fans Hivi, Reality Club, dan lainnya?
+          Hey! 👋 Wanna hang out and vibe with other Hivi & Reality Club fans?
         </p>
         <button
           onClick={handleForumRedirect}
           className="w-full px-3 py-2 border border-white/30 text-white text-sm rounded-lg backdrop-blur-md hover:border-white/60 hover:bg-white/10 transition-all duration-300"
         >
-          Masuk ke Fan Community 💬
+          Join the Fan Squad 💬
         </button>
       </motion.div>
     )}
