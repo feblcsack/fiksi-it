@@ -349,11 +349,11 @@ export function Navbar() {
               </nav>
 
               {/* Footer */}
-              <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t-2 border-retro-sage/30 bg-gradient-to-t from-retro-cream/80 to-transparent">
+              {/* <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t-2 border-retro-sage/30 bg-gradient-to-t from-retro-cream/80 to-transparent">
                 <p className="text-xs text-retro-dark/50 text-center font-serif">
                   © 2025 Musionic. All rights reserved.
                 </p>
-              </div>
+              </div> */}
             </motion.div>
           </>
         )}

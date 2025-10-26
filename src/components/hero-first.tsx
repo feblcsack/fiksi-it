@@ -14,7 +14,7 @@ export function HeroFirst() {
 
         {/* Heading */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 leading-tight">
-          The world's destination for <span className="text-primary">music discussion</span>
+          The world's destination for <span className="text-primary font-serif">Music Discussion</span>
         </h1>
 
         {/* Subheading */}
