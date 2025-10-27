@@ -17,57 +17,40 @@ export default function PricingPage() {
             Find your rhythm
           </h1>
           <p className="mt-4 text-pretty text-base text-muted-foreground md:text-lg">
-            Choose your best plan.
+            Choose the vibe that fits your flow.
           </p>
         </header>
 
         <section
           aria-label="Subscription plans"
-          className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8"
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8"
         >
           <PlanCard
-            name="Intro"
-            price="Rp15.000"
-            period="/mo"
-            description="Start your set with essential features."
+            name="Premium Plan"
+            price="Rp39.900"
+            period="/month"
+            description="Unlock the full groove experience — no ads, full-quality sound, and more control over your vibe."
             features={[
-              "Ad‑light listening",
-              "Standard audio quality",
-              "Basic queue & playlists",
-              "Up to 1 device",
-            ]}
-            ctaLabel="Get Started"
-          />
-
-          <PlanCard
-            name="Ensemble"
-            price="Rp50.000"
-            period="/mo"
-            description="A richer mix for regular listeners."
-            features={[
-              "Ad‑free listening",
-              "High‑fidelity audio",
-              "Unlimited playlists",
+              "Ad-free listening",
+              "High-fidelity audio",
+              "Unlimited skips & playlists",
               "Offline mode",
-              "Up to 3 devices",
+              "Priority feature access",
             ]}
-            ctaLabel="Subscribe"
+            ctaLabel="Go Premium"
             highlighted
           />
 
           <PlanCard
-            name="Headliner"
-            price="Rp70.000"
-            period="/mo"
-            description="Premium sound and priority features."
+            name="Upload Cover"
+            price="Rp10.000"
+            description="Personalize your tracklist with your own custom cover art — make your vibe truly yours."
             features={[
-              "Studio‑quality audio",
-              "Priority support",
-              "Exclusive sessions & drops",
-              "Family sharing (5)",
-              "Multi‑device sync",
+              "Upload custom cover image",
+              "Instant preview before publish",
+              "Applies to all your playlists",
             ]}
-            ctaLabel="Subscribe"
+            ctaLabel="Upload Now"
           />
         </section>
 
