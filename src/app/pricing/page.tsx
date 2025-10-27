@@ -43,6 +43,7 @@ export default function PricingPage() {
 
           <PlanCard
             name="Upload Cover"
+             period="/month"
             price="Rp10.000"
             description="Personalize your tracklist with your own custom cover art — make your vibe truly yours."
             features={[
